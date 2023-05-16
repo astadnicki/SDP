@@ -1,5 +1,5 @@
-SERIALPORT = COM4
-SOURCEFILE = 304JDPCode.c i2c.c SSD1306.c
+SERIALPORT = COM7
+SOURCEFILE = Build1.c i2c.c SSD1306.c
 
 begin:	main.hex
 
