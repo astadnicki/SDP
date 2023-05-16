@@ -80,7 +80,9 @@ int TMP_READ(void){
 }
 
 void displayPeople(void){
+  OLED_GoToLine(0);
   OLED_DisplayString("Number of People: ");
+  OLED_GoToLine(1);
   OLED_DisplayNumber(10,PEOPLE,2);
   _delay_ms(100);
   /*
@@ -151,18 +153,16 @@ float findDistance(int type){ //type is a 1 or 0, each has a different sensor
   else if(type == 1){
     PORTB &= ~(1 << PIN3); // 5 usec pre-TRIG
     _delay_us(5);
-    PORTB |= 1 << PIN3; // 10 us pulse
+    PORTB |= (1 << PIN3); // 10 us pulse
     _delay_us(10); // to ultrasound
     PORTB &= ~(1 << PIN3); // TRIG pin
     TCNT0 = 0;
     // Wait till ECHO pulse goes high
     while((PIND & (1<<PORTD4)) ==0);
-      rising_edge = TCNT0; // Note the time
       
-    // NOw wait till ECHO pulse low
+      rising_edge = TCNT0; // Note the time
+    // Now wait till ECHO pulse low
     while (!(PIND & (1<<PORTD4)) ==0);
-    OLED_GoToLine(1);
-      OLED_DisplayString("you");
       falling_edge = TCNT0;
     if(falling_edge > rising_edge){
 
@@ -186,7 +186,9 @@ void lockDoor(void){
     _delay_ms(4.5);
   }
   PORTC &= ~(1<<PORTC3);
+  OLED_GoToLine(0);
   displaySTR("Door Locked");
+  _delay_ms(10000);
 }
 
 void unlockDoor(void){
@@ -197,8 +199,9 @@ void unlockDoor(void){
     _delay_ms(2);
   }
   PORTC &= ~(1<<PORTC3);
+  OLED_GoToLine(0);
   displaySTR("Door Unlocked");
-  _delay_ms(200);
+  _delay_ms(10000);
   lockDoor();
 }
 
@@ -222,15 +225,15 @@ int main(void) {
   timer_init();
   OLED_Init();
   while(1){
-    OLED_GoToLine(0);
-    OLED_DisplayString("fuck");
+    //OLED_GoToLine(0);
+    //OLED_DisplayString("fuck");
     _delay_ms(10);
     dis = findDistance(0);
     //OLED_GoToLine(1);
     //OLED_DisplayNumber(10, dis, 3);
     if (dis<10){
       OLED_GoToLine(0);
-      displaySTR("Please Touch Temp Sensor");
+      displaySTR("Touch Temp Sensor");
       temp = TMP_READ();
       OLED_GoToLine(1);
       OLED_DisplayNumber(10, temp, 2);
@@ -238,15 +241,16 @@ int main(void) {
       if (temp>99){
         OLED_GoToLine(0);
         displaySTR("Enter only if you can verify that you aren't sick");
-        _delay_ms(1000);
+        _delay_ms(10000);
       } else {
         OLED_GoToLine(0);
         displaySTR("Please Enter");
+        _delay_ms(10000);
       }
       unlockDoor();
       lockDoor();
     }
-    dis = findDistance(1);
+    //dis = findDistance(1);
     if (dis<10){
       unlockDoor();
       lockDoor();
