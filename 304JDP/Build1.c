@@ -16,14 +16,7 @@ int PEOPLE = 0;
 int MAX = 100;
 
 int TMP_READ(void){
-  int saveD;
-  int saveB;
-  int savePB;
-
-  //PORTD is bottom and PORTB is top
-  saveD = DDRD;
-  saveB = DDRB;
-  savePB = PORTB;
+  //PORTD is bottom and PORTB is to
 
   DDRD = 0xFF;
   DDRB = 0xFE;
@@ -47,12 +40,7 @@ int TMP_READ(void){
   //delay with counter
   if (i % 20 == 0){
       while ((ADCSRA & (1<<ADIF)) == 0); //wait until finished converting
-      //If button is pushed, switch to celsius
-      if ((PINB & (1<<PINB5)) == 0){ //PINC1 is 0 when pressed
-          digitalValue = ((ADCL|(ADCH<<8))/10 - 32)*50/9; //convert ADC digital value to celsius
-      } else {
-          digitalValue = ADCL|(ADCH<<8); //read the ADC digital value
-      }
+      digitalValue = ADCL|(ADCH<<8); //read the ADC digital value
   }
 
   for (int j=0; j<10; j++){ // Sample tempreture every 125 ms (Uses the 4 digit ring counter from lecutre as base)
@@ -73,18 +61,16 @@ int TMP_READ(void){
     PORTB =~ (1<<3);
     _delay_ms(DELAY);
   }
-  DDRD = saveD;
-  DDRB = saveB;
-  PORTB = savePB;
   return num;
 }
 
 void displayPeople(void){
-  OLED_GoToLine(0);
+  //OLED_Clear();
+  OLED_GoToLine(2);
   OLED_DisplayString("Number of People: ");
-  OLED_GoToLine(1);
+  OLED_GoToLine(3);
   OLED_DisplayNumber(10,PEOPLE,2);
-  _delay_ms(100);
+  _delay_ms(100);//*/
   /*
   if (PEOPLE >= MAX){      //sets led to red 
     PORTD |= (1<<PORTD2);
@@ -117,28 +103,34 @@ void displaySTR(char* str){
   _delay_ms(100);
 }
 
+void clearline(int line){
+  OLED_GoToLine(line);
+  OLED_DisplayString("                    ");
+}
+
 
 float findDistance(int type){ //type is a 1 or 0, each has a different sensor
   //echo D4, trig D5 for sensor 0
   //echo B4, trig B3 for sensor 1
-  DDRB = 1<< PIN3;
-  PORTB = 1<< PORTB2;
-  PORTD = 1<< PORTD4; 
+  DDRB = 1<< PIN4; // Trig0
+  DDRD = 1<< PIN5; // Trig1
+  PORTB = 1<< PORTB3; //ECHO0
+  PORTD = 1<< PORTD4 ;//ECHO1 
 
   int rising_edge, falling_edge, echo_width, target_range;
   if (type == 0){
-    PORTB &= ~(1 << PIN3); // 5 usec pre-TRIG
+    PORTB &= ~(1 << PIN4); // 5 usec pre-TRIG
     _delay_us(5);
-    PORTB |= (1 << PIN3); // 10 us pulse
+    PORTB |= (1 << PIN4); // 10 us pulse
     _delay_us(10); // to ultrasound
-    PORTB &= ~(1 << PIN3); // TRIG pin
+    PORTB &= ~(1 << PIN4); // TRIG pin
     TCNT0 = 0;
     // Wait till ECHO pulse goes high
-    while((PINB & (1<<PORTB2)) ==0);
+    while((PINB & (1<<PORTB3)) ==0);
       
       rising_edge = TCNT0; // Note the time
     // Now wait till ECHO pulse low
-    while (!(PINB & (1<<PORTB2)) ==0);
+    while (!(PINB & (1<<PORTB3)) ==0);
       falling_edge = TCNT0;
     if(falling_edge > rising_edge){
       //Compute target range and send to serial monitor
@@ -147,15 +139,17 @@ float findDistance(int type){ //type is a 1 or 0, each has a different sensor
       // calculates as float first to be more accurate in the inches
       // displays at int to be more legible
       float cm = (target_range*1.098);    // distance in centimeters
+      //OLED_GoToLine(0);
+      //displaySTR("Fuck you0");
       return cm;
     }
   }
   else if(type == 1){
-    PORTB &= ~(1 << PIN3); // 5 usec pre-TRIG
+    PORTD &= ~(1 << PIN5); // 5 usec pre-TRIG
     _delay_us(5);
-    PORTB |= (1 << PIN3); // 10 us pulse
+    PORTD |= (1 << PIN5); // 10 us pulse
     _delay_us(10); // to ultrasound
-    PORTB &= ~(1 << PIN3); // TRIG pin
+    PORTD &= ~(1 << PIN5); // TRIG pin
     TCNT0 = 0;
     // Wait till ECHO pulse goes high
     while((PIND & (1<<PORTD4)) ==0);
@@ -163,7 +157,10 @@ float findDistance(int type){ //type is a 1 or 0, each has a different sensor
       rising_edge = TCNT0; // Note the time
     // Now wait till ECHO pulse low
     while (!(PIND & (1<<PORTD4)) ==0);
-      falling_edge = TCNT0;
+    //OLED_GoToLine(0);
+    //displaySTR("Fuck you1");
+    
+    falling_edge = TCNT0;
     if(falling_edge > rising_edge){
 
       //Compute target range and send to serial monitor
@@ -172,7 +169,9 @@ float findDistance(int type){ //type is a 1 or 0, each has a different sensor
       // calculates as float first to be more accurate in the inches
       // displays at int to be more legible
       float cm = (target_range*1.098);    // distance in centimeters
+      
       return cm;
+
     }
   }
   return 0;
@@ -186,9 +185,11 @@ void lockDoor(void){
     _delay_ms(4.5);
   }
   PORTC &= ~(1<<PORTC3);
+  clearline(0);
   OLED_GoToLine(0);
   displaySTR("Door Locked");
   _delay_ms(10000);
+  clearline(0);
 }
 
 void unlockDoor(void){
@@ -199,6 +200,7 @@ void unlockDoor(void){
     _delay_ms(2);
   }
   PORTC &= ~(1<<PORTC3);
+  clearline(0);
   OLED_GoToLine(0);
   displaySTR("Door Unlocked");
   _delay_ms(10000);
@@ -215,6 +217,10 @@ void timer_init(){
 int main(void) {
   float dis;
   int temp;
+  timer_init();
+  OLED_Init();
+  //OLED_GoToLine(0);
+  //OLED_DisplayString("fuck");
 
   DDRB = 0xFF; 
   //DDRC = 1<<PORTC5 | 1<<PORTC3 | 1<<PORTC0;
@@ -222,41 +228,50 @@ int main(void) {
   //PORTC = 1<<PORTC4 | 1<<PORTC2 | 1<<PORTC1;
   DDRD = 0xFF;
 
-  timer_init();
-  OLED_Init();
+  
+  
   while(1){
-    //OLED_GoToLine(0);
-    //OLED_DisplayString("fuck");
+    //clearline(0);
+    
     _delay_ms(10);
     dis = findDistance(0);
     //OLED_GoToLine(1);
     //OLED_DisplayNumber(10, dis, 3);
     if (dis<10){
+      clearline(0);
       OLED_GoToLine(0);
-      displaySTR("Touch Temp Sensor");
-      temp = TMP_READ();
-      OLED_GoToLine(1);
-      OLED_DisplayNumber(10, temp, 2);
-      _delay_ms(200);
-      if (temp>99){
-        OLED_GoToLine(0);
-        displaySTR("Enter only if you can verify that you aren't sick");
-        _delay_ms(10000);
-      } else {
+      displaySTR("Enter only if you can verify that you aren't sick (Press Button)");
+      //displaySTR("Touch Temp Sensor");
+      while ((PINB & (1<<PIN5)) != 0);
+      //temp = TMP_READ();
+      //OLED_GoToLine(1);
+      //OLED_DisplayNumber(10, temp, 3);
+      //_delay_ms(200);
+      //if (temp>70){
+      //_delay_ms(10000);
+      //if (PINB & (1<<PIN5) != 1){
+      displaySTR("Thank you! Please enter");
+      PEOPLE ++;
+      //}
+      _delay_ms(10000);
+      /*} else {
+        clearline(0);
         OLED_GoToLine(0);
         displaySTR("Please Enter");
+        PEOPLE ++;
         _delay_ms(10000);
-      }
+      }*/
       unlockDoor();
       lockDoor();
     }
-    //dis = findDistance(1);
+    dis = findDistance(1);
+    
     if (dis<10){
       unlockDoor();
+      PEOPLE --;
       lockDoor();
     }
     displayPeople();
     
   }
 }
-
