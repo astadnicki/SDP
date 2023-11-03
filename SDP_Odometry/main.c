@@ -12,7 +12,6 @@ Interpret and preform commands
     -200 Ok, 100 In Progress, 001 Program Halted
 
 TODO
-- Test USART Communication
 - Test ROS Listener Node
 - Implement PS4 Controller Code from github
 - (Maybe)Create signal handler to queue incoming commands
@@ -22,7 +21,7 @@ https://www.xanthium.in/how-to-avr-atmega328p-microcontroller-usart-uart-embedde
 */
 
 //#include "readIMU.cpp"
-#include "movement.h"
+//#include "movement.h"
 #include <string.h>
 
 #define F_CPU 16000000
@@ -30,8 +29,10 @@ https://www.xanthium.in/how-to-avr-atmega328p-microcontroller-usart-uart-embedde
 #define BAUD_PRESCALE 103
 
 char USART_readchar(){
+  
   while (!(UCSR0A & (1<<RXC0)));
-  return UDR0;
+  char c = UDR0;
+  return c;
 }
 
 char USART_test(int i,int j){
@@ -45,22 +46,25 @@ char USART_test(int i,int j){
 
 ///*
 int main (void){
-  unsigned char data[3];
+  unsigned char data[15] = {};
+  /*
+   * data[0] = '0' | '1' | '2' | '3' (forward left right dig)
+   * data[1] = d
+   */
   float cmd [3];
   const char s = ' ';
-
- // UCSR0B |= (1 << RXEN0) | (1 << TXEN0);   // Turn on the transmission and reception circuitry
-  UCSR0B = 0b00011000;
+  UCSR0B = 0x18;
   UCSR0C = 0x06; 
 
   //Configure UART
   UBRR0L = BAUD_PRESCALE;
   UBRR0H = (BAUD_PRESCALE >> 8);
 
-  while(1){ // Format for data recieve is 'cmd angle speed'
+  while(1){
     ///*
     int i = 0;
     int j = 0;
+    
     /* // Test code for switch/case and float conversion
     data[0] = "0";
     data[1] = ".";   
@@ -88,16 +92,16 @@ int main (void){
     */
     switch((int)cmd[0]){ //Preform action
       case 0:
-        driveForward(cmd[2]);
+        driveForward(cmd[1]);
         break;
       case 1:
-        driveRight(cmd[1],cmd[2]);
+        driveRight(cmd[2],cmd[1]);
         break;
       case 2:
-        driveLeft(cmd[1],cmd[2]);
+        driveLeft(cmd[2],cmd[1]);
         break;
       case 3:
-        //digCycle();
+        digCycle();
         break;
       //default:
         //driveForward(0.5);
