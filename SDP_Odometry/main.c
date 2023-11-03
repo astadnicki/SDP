@@ -28,58 +28,70 @@ https://www.xanthium.in/how-to-avr-atmega328p-microcontroller-usart-uart-embedde
 #define USART_BAUDRATE 9600
 #define BAUD_PRESCALE 103
 
-char USART_readchar(){
-  
-  while (!(UCSR0A & (1<<RXC0)));
+char USART_readchar() {
+
+  while (!(UCSR0A & (1 << RXC0)))
+    ;
   char c = UDR0;
   return c;
 }
 
-char USART_test(int i,int j){
-  char data[] = {'0',' ','0','.','5','\n'};
-  if (i == 0){
-      return data[j];
-  }else{
-      return data[j+i];
-  }        
+char USART_test(int i, int j) {
+  char data[] = { '0', ' ', '0', '.', '5', '\n' };
+  if (i == 0) {
+    return data[j];
+  } else {
+    return data[j + i];
+  }
 }
 
 ///*
-int main (void){
-  unsigned char data[15] = {};
+int main(void) {
   /*
    * data[0] = '0' | '1' | '2' | '3' (forward left right dig)
    * data[1] = d
    */
-  float cmd [3];
+  float cmd[10];
   const char s = ' ';
   UCSR0B = 0x18;
-  UCSR0C = 0x06; 
+  UCSR0C = 0x06;
 
   //Configure UART
   UBRR0L = BAUD_PRESCALE;
   UBRR0H = (BAUD_PRESCALE >> 8);
 
-  while(1){
+  //Configure GPIO
+  DDRD = (1 << PIN2) | (1 << PIN3) | (1 << PIN4) | (1 << PIN5);
+  DDRB = (1 << PIN0) | (1 << PIN1) | (1 << PIN2) | (1 << PIN3);
+
+  while (1) {
+    driveForward(1.0);
+  }
+
+  while (1) {
     ///*
     int i = 0;
     int j = 0;
-    
+
     /* // Test code for switch/case and float conversion
     data[0] = "0";
     data[1] = ".";   
     data[2] = "5";
     /**/
-    while (i<3){ // recieve/interpret USART data
-        data[j] = USART_readchar();
-        //data[j] = USART_test(i,j);
-      if (data[j] == ' '){
+
+    char data[50] = {};
+
+
+    while (i < 3) {  // recieve/interpret USART data
+      data[j] = USART_readchar();
+      //data[j] = USART_test(i,j);
+      if (data[j] == ' ') {
         cmd[i] = atof(data);
-        j=0;
+        j = 0;
         i++;
-      } else if (data[j] == '\n'){
+      } else if (data[j] == '\n') {
         cmd[i] = atof(data);
-        break;            
+        break;
       } else {
         j++;
       }
@@ -90,38 +102,40 @@ int main (void){
     cmd[1] = atof(data);
     cmd[2] = atof("1.57");
     */
-    switch((int)cmd[0]){ //Preform action
+    if (cmd[2] == 0){
+      continue;     
+    }
+
+    switch ((int)cmd[0]) {  //Preform action
       case 0:
-        driveForward(cmd[1]);
+        driveForward(cmd[2]);
         break;
       case 1:
-        driveRight(cmd[2],cmd[1]);
+        driveRight(cmd[1], cmd[2]);
         break;
       case 2:
-        driveLeft(cmd[2],cmd[1]);
+        driveLeft(cmd[1], cmd[2]);
         break;
-      case 3:
-        digCycle();
+      default:
         break;
-      //default:
+        //default:
         //driveForward(0.5);
         //driveRight(0.5,3.14);
         //driveForward(0.5);
-        //break;          
+        //break;
     }
   }
 }
 //*/
 
-//Test Code for movement.c
-/*
-int main(void){
-    while (1){
-      driveForward(0.5);
-      _delay_us(10000);
-      driveRight(3.14/2,0.5);
-      _delay_us(1000);
-      driveLeft(3.14/2,0.5);
-      _delay_us(10000);
-    }   
-}*/
+// //Test Code for movement.c
+// int main(void){
+//     while (1){
+//       driveForward(0.5);
+//       _delay_us(10000);
+//       driveRight(3.14/2,0.5);
+//       _delay_us(1000);
+//       driveLeft(3.14/2,0.5);
+//       _delay_us(10000);
+//     }
+// }*/
