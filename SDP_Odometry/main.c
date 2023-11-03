@@ -64,9 +64,9 @@ int main(void) {
   DDRD = (1 << PIN2) | (1 << PIN3) | (1 << PIN4) | (1 << PIN5);
   DDRB = (1 << PIN0) | (1 << PIN1) | (1 << PIN2) | (1 << PIN3);
 
-  while (1) {
-    driveForward(1.0);
-  }
+  // while (1) {
+  //   driveForward(1.0);
+  // }
 
   while (1) {
     ///*
@@ -80,7 +80,20 @@ int main(void) {
     /**/
 
     char data[50] = {};
-
+    //Need to get this section working for async
+    // char temp = USART_readchar_v2();
+    // if (temp != NULL){ //If there is a new character
+      
+    //   data[j] = temp;
+    //   j++;
+    //   if (temp == '\n'){
+    //     for (i=0;i<3;i++){ //Parses new cmd
+    //       char *pnt = strtok(data," ")
+    //       cmd[i]=atof();
+    //     }
+    //     data[50] = '\0';
+    //   }
+    //}
 
     while (i < 3) {  // recieve/interpret USART data
       data[j] = USART_readchar();
