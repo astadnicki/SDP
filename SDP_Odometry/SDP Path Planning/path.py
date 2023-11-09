@@ -125,9 +125,9 @@ class Search():
             return
         visited = []
         queue = PriorityQueue()
-        lastAxis = "x"
+        lastAxis = "y"
         position = self.start
-        node = [position, [[0, 1, 0]], lastAxis, 0.0, [position]] #makes node for starting position
+        node = [position, [[0, 0, 0]], lastAxis, 0.0, [position]] #makes node for starting position
         queue.push(node, 0.0)    #add start node to queue
         while not queue.isEmpty():
             position, actions, lastAxis, cost, coord = queue.pop() #removes top of queue
