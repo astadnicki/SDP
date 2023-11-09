@@ -1,4 +1,42 @@
-import util
+import heapq
+
+class PriorityQueue:
+    """
+    Priority Queue built off of heap datatype
+    """
+
+    def __init__(self):
+        self.heap = []
+        self.count = 0
+
+    def push(self, item, priority): #adds item to priority queue w/
+        entry = (priority, self.count, item)
+        heapq.heappush(self.heap, entry)
+        self.count += 1
+
+    def pop(self): #removes item from priority queue
+        (_, _, item) = heapq.heappop(self.heap)
+        return item
+
+    def isEmpty(self):
+        return len(self.heap) == 0
+
+    def update(self, item, priority):
+        """
+        If item already in priority queue with higher priority, update its priority and rebuild the heap.
+        If item already in priority queue with equal or lower priority, do nothing.
+        If item not in priority queue, do the same thing as self.push.
+        """
+        for index, (p, c, i) in enumerate(self.heap):
+            if i == item:
+                if p <= priority:
+                    break
+                del self.heap[index]
+                self.heap.append((priority, c, item))
+                heapq.heapify(self.heap)
+                break
+        else:
+            self.push(item, priority)
             
 class Search():
     """
@@ -22,6 +60,7 @@ class Search():
 
     def getStart(self):
         return self.start
+    
 
     def getSuccessors(self, position):
         #successors is list of potential positions to move to, along with the direction moved
@@ -48,12 +87,25 @@ class Search():
             return True
         return False
     
-    def computeTurn(self, lastAxis): #makes the Robit TUUUUUUURRRRRRN##
+    def computeTurn(self, lastAxis, actions, action): #makes the Robit TUUUUUUURRRRRRN##
         #making this very simple for now
+        """
         if lastAxis == "y":
             return [1, 1, 90] #turn right if going to +x
         return [2, 1, 90]#turn left if going to +y
-            
+        """
+        # trying to make it not simple, but not implementing 180° turns yet
+        lastAction = actions[-1]
+        
+        if lastAction[1] != action[1] and lastAxis == "y": #turning from +y to -x or -y to +x
+            return [1, 1, 90]
+        elif lastAction[1] != action[1] and lastAxis == "x": #turning +x to -y or -x to +y
+            return [2, 1, 90] 
+        elif lastAxis == "y": #turning +y to +x or -y to -x
+            return [2, 1, 90]
+        return [1, 1, 90]   #turning +x to +y or -x to -y
+        
+                    
 
     def calcDist(self): 
         #will be implemented when encoders are added
@@ -72,31 +124,31 @@ class Search():
         if self.checkGoal(self.start):
             return
         visited = []
-        queue = util.PriorityQueue()
+        queue = PriorityQueue()
         lastAxis = "x"
         position = self.start
         node = [position, [[0, 1, 0]], lastAxis, 0.0, [position]] #makes node for starting position
         queue.push(node, 0.0)    #add start node to queue
         while not queue.isEmpty():
-            position, actions, lastAxis, cost, hate = queue.pop() #removes top of queue
+            position, actions, lastAxis, cost, coord = queue.pop() #removes top of queue
             if position not in visited and grid[position[0]][position[1]] != 1: #if node is visited, move onto next in queue
                 visited.append(position)
                 if self.checkGoal(position):
-                    print(position) #for demo purposes
-                    #print(visited) #for demo purposes
+                    print(position) #for demo purposes, prints goal node when reached
                     #print()
-                    print(hate)
+                    print(coord)#prints coordinates ordered in path
+                    actions.pop()
                     return actions
                 else:
                     """n's in successors are different from nodes, only one action is passed through a successor.
                     Nodes in the queue have a list of actions leading up to their position from start 
                     """
                     for n in self.getSuccessors(position): #goes through each possible successor
-                        if lastAxis != n[2]:    #adds any turns made to list of actions
-                            tmp = self.computeTurn(lastAxis)
-                            actions.append(tmp) #adds turn to actions list
-                        tmp = actions + [n[1]] #add actions to list of actions
-                        tmp2 = hate + [n[4]]
+                        if lastAxis != n[2]:
+                            tmp = actions + [self.computeTurn(lastAxis, actions, n[1])] + [[0, 1, 0]]
+                        else:
+                            tmp = actions + [[0, 1, 0]]
+                        tmp2 = coord + [n[4]]
                         h = self.calcManhattan(n[0])
                         cost += 1   #updates path cost
                         node = (n[0], tmp, n[2], cost, tmp2) #new node w/ actions and cost
@@ -135,5 +187,3 @@ print (hell_list)
 """
 #if code works, should route left around obstruction
 """
-
-                        
