@@ -190,7 +190,7 @@ dir_list = robot.searchA()
 print (dir_list)
 ser = serial.Serial('/dev/cu.usbmodem14201')  # open serial port (top left port of my laptop)
 print(ser.name)         # check which port was really used
-ser.write(b'hello')     # write a string
+ser.write(dir_list[1])     # write a string
 ser.close()   
 """
 #if code works, should route left around obstruction
