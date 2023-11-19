@@ -15,7 +15,7 @@ class MinimalSubscriber(Node):
         super().__init__('minimal_subscriber')
         self.subscription = self.create_subscription(
             Int32MultiArray, #get data type from John
-            'Nuttap',
+            'nuttap',
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
