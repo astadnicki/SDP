@@ -218,6 +218,7 @@ class Search():
                         node = (n[0], tmp, n[2], cost, tmp2) #new node w/ actions and cost
                         queue.push(node, cost + h) #pushes new node onto stack
                         #print(actions)
+	actions += ["DD 00 00"]
         return actions  #returns list of actions
 
 
