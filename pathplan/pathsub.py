@@ -1,5 +1,5 @@
 import heapq
-import serial #for sending stuff to odometry
+#import serial #for sending stuff to odometry
 
 #subscriber stuff
 
@@ -7,30 +7,56 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
-
+from nav_msgs.msg import OccupancyGrid
 
 class MinimalSubscriber(Node):
 
     def __init__(self):
         super().__init__('minimal_subscriber')
         self.subscription = self.create_subscription(
-            Int32MultiArray, #get data type from John
-            'nuttap',
+            OccupancyGrid, #data type
+            '/global_costmap/costmap',
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
+        
+    def squarize(self,msg):
+        height = int(msg.info.height)
+        width = int(msg.info.width)
+        xoffset = 0
+        yoffset = 0
+	
+	
+        if height > width:
+                yoffset:int = (height-width)/2
+        if width > height:
+                xoffset:int = (width-height)/2
+		
+        matrix = [[0 for i in range(int(width-xoffset))] for j in range(int(height-yoffset))]
+        for i in range(int(height-yoffset)):
+                 matrix[i][0:width] = msg.data[int(((i+yoffset)*width)+xoffset):int(((i+1)*width))]
+        return matrix
+		
+    	
 
     def listener_callback(self, msg):
         #self.get_logger().info(% msg.data)
-        goal = [len(msg.data) - 1, len(msg.data[0])/2]
+        area = self.squarize(msg)
+        
+        goal = [len(area) - 1, len(area)/2]
+        self.get_logger().info('goal: '+str(goal))
+        self.get_logger().info('width: '+str(msg.info.width))
+        self.get_logger().info('height: '+str(msg.info.height))
         """
         Right now, goal is just made to be in corner, we can reset where-ever it needs to be
         """
-        robot = Search(goal, msg.data) #
+        self.get_logger().info(str(area))
+        
+        robot = Search(goal, area,msg.info.origin.position.x,msg.info.origin.position.y) #
         dir_list = robot.searchA()
         send = str(dir_list[0][0]) + " " + str(dir_list[1][0]) + " " + str(dir_list[2][0]) #convert direction to string
-        ser = serial.Serial("""Whatever serial port we can send to""")
-        ser.write(send) #writes first instruction from path planning to odometry
+        #ser = serial.Serial("""Whatever serial port we can send to""")
+        #ser.write(send) #writes first instruction from path planning to odometry
         
 
 # Path Planning stuff
@@ -88,11 +114,11 @@ class Search():
         x.xxx is angle (only used for left and right)
     """
 
-    def __init__(self, goal, grid): #goal is [int, int], grid is 2D Lidar map
+    def __init__(self, goal, grid,startx,starty): #goal is [int, int], grid is 2D Lidar map
         #declares attributes of search object
         self.goal = goal
         self.grid = grid
-        self.start = [int(len(grid)/2), int(len(grid[0])/2)] #starting position is always center of map
+        self.start = [startx, starty] #starting position is always center of map
 
     def getStart(self):
         return self.start
@@ -119,7 +145,7 @@ class Search():
 
     
     def checkGoal(self, position):    #checks if goal state has been reached
-        if position == goal:
+        if position == self.goal:
             return True
         return False
     
@@ -167,7 +193,7 @@ class Search():
         queue.push(node, 0.0)    #add start node to queue
         while not queue.isEmpty():
             position, actions, lastAxis, cost, coord = queue.pop() #removes top of queue
-            if position not in visited and grid[position[0]][position[1]] != 1: #if node is visited, move onto next in queue
+            if position not in visited and self.grid[position[0]][position[1]] != 1: #if node is visited, move onto next in queue
                 visited.append(position)
                 if self.checkGoal(position):
                     #print(position) #for demo purposes, prints goal node when reached
@@ -237,8 +263,8 @@ if __name__ == '__main__':
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]"""
-robot = Search(goal, grid)
-dir_list = robot.searchA()
+#robot = Search(goal, grid)
+#dir_list = robot.searchA()
 #print (dir_list)
 
 """
