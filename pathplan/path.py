@@ -134,7 +134,7 @@ class Search():
         queue.push(node, 0.0)    #add start node to queue
         while not queue.isEmpty():
             position, actions, lastAxis, cost, coord = queue.pop() #removes top of queue
-            if position not in visited and grid[position[0]][position[1]] < 0.99 : #if node is visited, move onto next in queue
+            if position not in visited and grid[position[0]][position[1]] < 99.0 : #if node is visited, move onto next in queue
                 visited.append(position)
                 if self.checkGoal(position):
                     print(position) #for demo purposes, prints goal node when reached
