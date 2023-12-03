@@ -23,12 +23,12 @@ void setup(void) {
   // 0: 
 
   Serial.begin(9600);
-  //Serial.begin(115200);
+  /*
   while (!Serial)   // 1/10 of a meter for set distance to go forward
     delay(0.1); // will pause Zero, Leonardo, etc until serial console opens // INITIALLY DELAY 10
-
+  */
   //Serial.println("Adafruit MPU6050 test!");
-
+  
   // Try to initialize!
   if (!mpu.begin()) {
     //Serial.println("Failed to find MPU6050 chip");
@@ -77,8 +77,8 @@ void loop() {
 
   //analogWrite(2, 255);
 
-  Serial.println("");
-  Serial.println("");
+  //Serial.println("");
+  //Serial.println("");
 
   // 50-99: Positive speed (50 is 0 or just weak, 99 is highest)
   // 0-49: Negative speed (0 is 0 or just week, 49 is highest)
@@ -88,15 +88,22 @@ void loop() {
 
   delay(10);
   
-  String serialInput = Serial.readString();
-
-  for (int i = 0; i <= 7; i++) {
-    if (serialInput.substring(i, i+1) == "A") {
+  if (Serial.available() > 0) {
+    String data = Serial.readStringUntil('\n');
+    if (data.substring(0,1) == "A") {
       driveForward(99);
-      stopMoving();
+    } else if (data.substring(0,1) == "B") {
+      driveLeft(99, 50);
+    } else if (data.substring(0,1) == "C") {
+      driveRight(99, 00);
+    } else if (data.substring(0,1) == "D") {
+    stopMoving();
     }
+    stopMoving();
+    //Serial.println("Ack");
   }
   
+  /*
   if (serialInput.substring(0,1) == "A") {
     driveForward(serialInput.substring(2,4).toInt());
   } else if (serialInput.substring(0,1) == "B") {
@@ -106,7 +113,7 @@ void loop() {
   } else if (serialInput.substring(0,1) == "D") {
     stopMoving();
   }
-
+  */
 }
 
 int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 0.7)
