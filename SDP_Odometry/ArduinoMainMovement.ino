@@ -76,10 +76,6 @@ void setup(void) {
 void loop() {
 
   //analogWrite(2, 255);
-
-  //Serial.println("");
-  //Serial.println("");
-
   // 50-99: Positive speed (50 is 0 or just weak, 99 is highest)
   // 0-49: Negative speed (0 is 0 or just week, 49 is highest)
   // Commands: A is forward, B is right, C is left, D is nothing (empty) can drop the rest of the characters
@@ -92,14 +88,21 @@ void loop() {
     String data = Serial.readStringUntil('\n');
     if (data.substring(0,1) == "A") {
       driveForward(99);
+      stopMoving();
+      Serial.print("AA 99 00");
     } else if (data.substring(0,1) == "B") {
       driveLeft(99, 50);
+      Serial.print("BB 99 50");
+      stopMoving();
     } else if (data.substring(0,1) == "C") {
-      driveRight(99, 00);
+      driveRight(99, 50);
+      Serial.print("CC 99 50");
+      stopMoving();
     } else if (data.substring(0,1) == "D") {
-    stopMoving();
+      stopMoving();
+      Serial.print("DD 00 00");
     }
-    stopMoving();
+    //stopMoving();
     //Serial.println("Ack");
   }
   
@@ -140,6 +143,7 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
     float dx2 = (a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000;
     float dy2 = (a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000;
     float d = sqrt(pow(dx2, 2) + pow(dy2, 2));
+    /*
     Serial.print("Acceleration X: ");
     Serial.print(a.acceleration.x);
     Serial.print(", Y: ");
@@ -152,6 +156,7 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
     Serial.println(dy2);
     Serial.println("total distance:");
     Serial.println(d);
+    */
     while (error == 1) {
       if (d < 0.2) {
         error = 1;
@@ -165,8 +170,10 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
       dx2 = dx2 + ((a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000);
       dy2 = dy2 + ((a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000);
       d = sqrt(pow(dx2, 2) + pow(dy2, 2));
+      /*
       Serial.println("total distance:");
       Serial.println(d);
+      */
     }
   }
   if (speed < 50) {
@@ -191,6 +198,7 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
     float d = sqrt(pow(dx2, 2) + pow(dy2, 2));
     //Serial.println(dx1);
     //Serial.println(dy1);
+    /*
     Serial.print("Acceleration X: ");
     Serial.print(a.acceleration.x);
     Serial.print(", Y: ");
@@ -203,6 +211,7 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
     Serial.println(dy2);
     Serial.println("total distance:");
     Serial.println(d);
+    */
     while (error == 1) {
       if (d < 0.2) {
         error = 1;
@@ -216,11 +225,13 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
       dx2 = dx2 + ((a.acceleration.x)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.x)*timeDelay*timeDelay/1000000);
       dy2 = dy2 + ((a.acceleration.y)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.y)*timeDelay*timeDelay/1000000); // Add distance to prior distance traveled
       d = sqrt(pow(dx2, 2) + pow(dy2, 2));
+      /*
       Serial.println("total distance:");
       Serial.println(d);
+      */
     }
     
-    Serial.write("done");
+    //Serial.write("done");
     return 0;
   }
 }
@@ -228,7 +239,7 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
 //float angle
 int driveLeft(int speed, float deg) {
   float percentAngle = deg/100;
-  int timeDelay = percentAngle * 500; // 290 is the time for a 90 degree turn to occur if pulse is 580
+  int timeDelay = percentAngle * 420; // 290 is the time for a 90 degree turn to occur if pulse is 580
   int pulse = 130;
   if (pulse < 130) {
     pulse = 130;
@@ -246,12 +257,14 @@ int driveLeft(int speed, float deg) {
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
   float testedAngleEnd = sqrt(pow(g.gyro.x + 0.06, 2) + pow(g.gyro.y - 0.01, 2)) * timeDelay / 1000; // Math for angles might be wrong, way to low for #s
+  /*
   Serial.print("Rotation X: ");
   Serial.print(g.gyro.x);
   Serial.print(", Y: ");
   Serial.print(g.gyro.y);
   Serial.print("testedAngleEnd");
   Serial.println(testedAngleEnd);
+  */
   while (error == 1) {
     if (testedAngleEnd < 0.03) {
       error = 1;
@@ -263,16 +276,18 @@ int driveLeft(int speed, float deg) {
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
     testedAngleEnd = testedAngleEnd + (sqrt(pow(g.gyro.x + 0.06, 2) + pow(g.gyro.y - 0.01, 2)) * timeDelay / 1000);
+    /*
     Serial.print("testedAngleEnd CHECK");
     Serial.println(testedAngleEnd);
+    */
   }
-  Serial.write("done");
+  //Serial.write("done");
   return 0;
 }
 
 int driveRight(int speed, float deg) { // 100% means 90 degree turn
   float percentAngle = deg/100;
-  int timeDelay = percentAngle * 500; // 290 is the time for a 90 degree turn to occur if pulse is 130, 180 degrees for 590 or 100% deg
+  int timeDelay = percentAngle * 420; // 290 is the time for a 90 degree turn to occur if pulse is 130, 180 degrees for 590 or 100% deg
   int pulse = 130;
   if (pulse < 130) {
     pulse = 130;
@@ -290,12 +305,14 @@ int driveRight(int speed, float deg) { // 100% means 90 degree turn
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
   float testedAngleEnd = sqrt(pow(g.gyro.x + 0.06, 2) + pow(g.gyro.y - 0.01, 2)) * timeDelay / 1000;
+  /*
   Serial.print("Rotation X: ");
   Serial.print(g.gyro.x);
   Serial.print(", Y: ");
   Serial.print(g.gyro.y);
   Serial.print("testedAngleEnd");
   Serial.println(testedAngleEnd);
+  */
   while (error == 1) {
     if (testedAngleEnd < 0.03) {
       error = 1;
@@ -307,10 +324,12 @@ int driveRight(int speed, float deg) { // 100% means 90 degree turn
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
     testedAngleEnd = testedAngleEnd + (sqrt(pow(g.gyro.x + 0.06, 2) + pow(g.gyro.y - 0.01, 2)) * timeDelay / 1000);
+    /*
     Serial.print("testedAngleEnd CHECK");
     Serial.println(testedAngleEnd);
+    */
   }
-  Serial.write("done");
+  //Serial.write("done");
   return 0;
 }
 
@@ -324,7 +343,7 @@ int stopMoving() {
    analogWrite(10, 0);
    analogWrite(11, 0);
    delay(500);
-   Serial.write("done");
+   //Serial.write("done");
 }
 
 void delay_us_10us(int ms) {
