@@ -326,6 +326,17 @@ if __name__ == '__main__':
 """
 
 '''
+while(dirList[0] != goal):
+    #time.sleep(2) #skips commands w/out this delay
+    print(dirList[0])
+    #ser.write(dirList[1][0].encode("utf-8"))
+    #time.sleep(2) #skips commands w/out this delay
+    #print(ser.readline().decode('utf-8').rstrip())
+    #ser.reset_input_buffer()
+    robot = Search(goal, grid, dirList[0])
+    dirList = robot.searchA()
+
+    
 for item in dirList[1:]:    #first value in every path isn't used
     print(item)
     ser.write(item[0].encode("utf-8"))
