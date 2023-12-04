@@ -172,7 +172,7 @@ class Search():
         successors = []
         y = position[0]
         x = position[1]
-        step = 2
+        step = 13
         yhi = [[y + step, x], ["AA 99 00", 1], "y", 1.0, [y, x]]
         ylow = [[y - step, x], ["AA 99 00", -1], "y", 1.0, [y, x]]
         xhi = [[y, x + step], ["AA 99 00", 1], "x", 1.0, [y, x]]
