@@ -1,5 +1,7 @@
 import heapq
 import serial #for sending stuff to odometry
+import time
+import numpy as np
 
 #subscriber stuff
 
@@ -7,33 +9,101 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
-
+from nav_msgs.msg import OccupancyGrid
 
 class MinimalSubscriber(Node):
 
     def __init__(self):
         super().__init__('minimal_subscriber')
         self.subscription = self.create_subscription(
-            Int32MultiArray, #get data type from John
-            'nuttap',
+            OccupancyGrid, #data type
+            '/global_costmap/costmap',
             self.listener_callback,
             10)
+        self.ser = serial.Serial('/dev/ttyACM0')
+        time.sleep(2)
+        self.ser.close()
         self.subscription  # prevent unused variable warning
+        
+    def squarize(self,msg):
+        height = int(msg.info.height)
+        width = int(msg.info.width)
+        xoffset = 0
+        yoffset = 0
+        j=0
+        k=0
+        
+        print(height)
+        print(width)
+       
+	
+	
+        if height > width:
+                yoffset = (height-width)/2
+                print(len(msg.data))
+                if yoffset == int(yoffset):
+               	    Oned_sqr = msg.data[int(yoffset)*width-1:len(msg.data)-(int(yoffset)*width)-1]
+               	else:
+               	    Oned_sqr = msg.data[(int(yoffset+1))*width-1:len(msg.data)-(int(yoffset))*width-1]
+                print(len(Oned_sqr))
+        if width > height:
+                if xoffset == int(xoffset):
+                    Oned_sqr = msg.data[int(xoffset*height-1):int(len(msg.data)-xoffset*height-1)]
+                else:
+                    Oned_sqr = msg.data[int((xoffset-1)*height-1):int(len(msg.data)-xoffset*height-1)]
+                xoffset:int = int((width-height)/2)
+                Oned_sqr = msg.data[int(xoffset*height-1):int(len(msg.data)-xoffset*height-1)]
+     
+        minVal = min(width,height)
+        matrix = np.array(Oned_sqr).reshape(minVal,minVal)
+        #print(matrix)
+        return matrix
+        	
+        '''for i in range(int(height-yoffset)):
+                 matrix[i][0:width] = msg.data[int(((i+yoffset)*width)+xoffset):int(((i+1)*width))]
+                 #print(msg.data[int(((i+yoffset)*width)+xoffset):int(((i+1)*width))])
+        return matrix
+	'''	
+    	
 
     def listener_callback(self, msg):
-        #self.get_logger().info(% msg.data)
-        goal = [len(msg.data) - 1, len(msg.data[0])/2]
+        #print(msg.data)
+        area = self.squarize(msg)
+        print(len(area),len(area[0]))
+        
+        goal = [int(len(area) - 1), int(len(area)/2)]
+ 
         """
         Right now, goal is just made to be in corner, we can reset where-ever it needs to be
         """
-        robot = Search(goal, msg.data) #
-        dir_list = robot.searchA()
-        send = str(dir_list[0][0]) + " " + str(dir_list[1][0]) + " " + str(dir_list[2][0]) #convert direction to string
-        ser = serial.Serial("""Whatever serial port we can send to""")
-        ser.write(send) #writes first instruction from path planning to odometry
+        xpos = msg.info.origin.position.x + msg.info.width/2
+        ypos = msg.info.origin.position.y + msg.info.height/2
+        #print(len(area), len(area[0]))
+        #print(area)
+        self.ser.open()
+
+        robot = Search(goal, area,[int(xpos),int(ypos)]) #
+        #print("here")
+        dirList = robot.searchA()
+        #print('dirList')
+        print(int(xpos), int(ypos))
+        print(dirList)
+        for item in dirList[1:3]:    #first value in every path isn't used
+    	        self.ser.write(item[0].encode("utf-8"))
+    	        time.sleep(1.65)    #needs this amount of time between commands or else it skips
+    	        print("cum")
+    	        self.ser.write(item[0].encode("utf-8"))
+    	        time.sleep(1.65)    #needs this amount of time between commands or else it skips
+    	        print("cum1")
+    	        #line = self.ser.readline().decode('utf-8').rstrip()
+        print('here')
+        self.ser.close()
+        
+        
         
 
 # Path Planning stuff
+
 
 class PriorityQueue:
     """
@@ -102,23 +172,23 @@ class Search():
         successors = []
         y = position[0]
         x = position[1]
-        yhi = [[y + 1, x], ["AA 99 00", 1], "y", 1.0, [y, x]]
-        ylow = [[y - 1, x], ["AA 99 00", -1], "y", 1.0, [y, x]]
-        xhi = [[y, x + 1], ["AA 99 00", 1], "x", 1.0, [y, x]]
-        xlow = [[y, x - 1], ["AA 99 00", -1], "x", 1.0, [y, x]]
-        if y + 1 != len(grid): #prevents exceeding range
+        yhi = [[y + 13, x], ["AA 99 00", 1], "y", 1.0, [y, x]]
+        ylow = [[y - 13, x], ["AA 99 00", -1], "y", 1.0, [y, x]]
+        xhi = [[y, x + 13], ["AA 99 00", 1], "x", 1.0, [y, x]]
+        xlow = [[y, x - 13], ["AA 99 00", -1], "x", 1.0, [y, x]]
+        if y + 1 != len(self.grid) and y - 1 > 0: #prevents exceeding range
             successors.append(yhi)
-        if y != 0:
+        if y != 0 and y - 1 != 0:
             successors.append(ylow)
-        if x + 1 != len(grid[1]):
+        if x + 1 != len(self.grid[1]) and x - 1 > 0:
             successors.append(xhi)
-        if x != 0:
+        if x != 0 and y - 1 != 0:
             successors.append(xlow)
         return successors
 
     
     def checkGoal(self, position):    #checks if goal state has been reached
-        if position == goal:
+        if position == self.goal:
             return True
         return False
     
@@ -167,36 +237,40 @@ class Search():
         queue.push(node, 0.0)    #add start node to queue
         while not queue.isEmpty():
             position, actions, lastAxis, cost, coord = queue.pop() #removes top of queue
-            if position not in visited and grid[position[0]][position[1]] < 99 : #if node is visited, move onto next in queue
-                visited.append(position)
-                if self.checkGoal(position):
-                    #print(position) #for demo purposes, prints goal node when reached
-                    #print()
-                    coord += [position]
-                    #print(coord)#prints coordinates ordered in path
-                    #actions.pop()
-                    actions = actions + [["DD 00 00", 1]]
-                    actions[0] = coord[2]
-                    return actions
-                else:
-                    """n's in successors are different from nodes, only one action is passed through a successor.
-                    Nodes in the queue have a list of actions leading up to their position from start 
-                    """
-                    for n in self.getSuccessors(position): #goes through each possible successor
-                        if lastAxis != n[2]:
-                            #print(n[2], lastAxis)
-                            tmp = actions + [[self.computeTurn(lastAxis, actions, n[1]), n[1][1]]] + [n[1]]
-                        else:
-                            tmp = actions + [n[1]]
-                        tmp2 = coord + [n[4]]
-                        h = self.calcManhattan(n[0])
-                        #print(coord[len(coord)-1][0])
-                        #print(self.grid[1][2])
-                        cost += 1 + self.grid[coord[len(coord)-1][0]][coord[len(coord)-1][1]] #gets weight of node, and updates path cost
-                        node = (n[0], tmp, n[2], cost, tmp2) #new node w/ actions and cost
-                        queue.push(node, cost + h) #pushes new node onto stack
-                        #print(actions)
+            #print(position)
+            if position[0] < len(self.grid) and position[1] < len(self.grid) and position[0] > 0 and position[1] > 0:
+                #print(position)
+                if position not in visited and self.grid[position[0]][position[1]] < 99 : #if node is visited, move onto next in queue
+                    visited.append(position)
+                    if self.checkGoal(position):
+                        #print(position) #for demo purposes, prints goal node when reached
+                        #print()
+                        coord += [position]
+                        #print(coord)#prints coordinates ordered in path
+                        #actions.pop()
+                        actions = actions + [["DD 00 00", 1]]
+                        actions[0] = coord[2]
+                        return actions
+                    else:
+                        """n's in successors are different from nodes, only one action is passed through a successor.
+                        Nodes in the queue have a list of actions leading up to their position from start 
+                        """
+                        for n in self.getSuccessors(position): #goes through each possible successor
+                            if lastAxis != n[2]:
+                                #print(n[2], lastAxis)
+                                tmp = actions + [[self.computeTurn(lastAxis, actions, n[1]), n[1][1]]] + [n[1]]
+                            else:
+                                tmp = actions + [n[1]]
+                            tmp2 = coord + [n[4]]
+                            h = self.calcManhattan(n[0])
+                            #print(coord[len(coord)-1][0])
+                            #print(self.grid[1][2])
+                            cost += 1 + self.grid[coord[len(coord)-1][0]][coord[len(coord)-1][1]] #gets weight of node, and updates path cost
+                            node = (n[0], tmp, n[2], cost, tmp2) #new node w/ actions and cost
+                            queue.push(node, cost + h) #pushes new node onto stack
+                            #print(actions)
         return actions  #returns list of actions
+
 
 
 """
@@ -242,11 +316,15 @@ if __name__ == '__main__':
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]"""
-robot = Search(goal, grid)
-dir_list = robot.searchA()
+#robot = Search(goal, grid)
+#dir_list = robot.searchA()
 #print (dir_list)
 
 """
+#if code works, should route left around obstruction
+"""
+
+'''
 for item in dirList[1:]:    #first value in every path isn't used
     print(item)
     ser.write(item[0].encode("utf-8"))
@@ -259,7 +337,5 @@ for item in dirList[1:]:    #first value in every path isn't used
     
     #print(line)
     #print(item)
-#if code works, should route left around obstruction
-"""
-
-                        
+'''
+                      
