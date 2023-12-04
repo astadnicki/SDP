@@ -35,7 +35,6 @@ class MinimalSubscriber(Node):
 
 # Path Planning stuff
 
-
 class PriorityQueue:
     """
     Priority Queue built off of heap datatype
@@ -88,11 +87,11 @@ class Search():
         x.xxx is angle (only used for left and right)
     """
 
-    def __init__(self, goal, grid): #goal is [int, int], grid is 2D Lidar map
+    def __init__(self, goal, grid, start): #goal is [int, int], grid is 2D Lidar map
         #declares attributes of search object
         self.goal = goal
         self.grid = grid
-        self.start = [int(len(grid)/2), int(len(grid[0])/2)] #starting position is always center of map
+        self.start = start
 
     def getStart(self):
         return self.start
@@ -103,10 +102,10 @@ class Search():
         successors = []
         y = position[0]
         x = position[1]
-        yhi = [[y + 1, x], ["a", 1, 0], "y", 1.0, [y, x]]
-        ylow = [[y - 1, x], ["a", -1, 0], "y", 1.0, [y, x]]
-        xhi = [[y, x + 1], ["a", 1, 0], "x", 1.0, [y, x]]
-        xlow = [[y, x - 1], ["a", -1, 0], "x", 1.0, [y, x]]
+        yhi = [[y + 1, x], ["AA 99 00", 1], "y", 1.0, [y, x]]
+        ylow = [[y - 1, x], ["AA 99 00", -1], "y", 1.0, [y, x]]
+        xhi = [[y, x + 1], ["AA 99 00", 1], "x", 1.0, [y, x]]
+        xlow = [[y, x - 1], ["AA 99 00", -1], "x", 1.0, [y, x]]
         if y + 1 != len(grid): #prevents exceeding range
             successors.append(yhi)
         if y != 0:
@@ -132,14 +131,15 @@ class Search():
         """
         # trying to make it not simple, but not implementing 180° turns yet
         lastAction = actions[-1]
+        #print(actions)
         
         if lastAction[1] != action[1] and lastAxis == "y": #turning from +y to -x or -y to +x
-            return ["b", 1, 90]
+            return "CC 99 50"
         elif lastAction[1] != action[1] and lastAxis == "x": #turning +x to -y or -x to +y
-            return ["c", 1, 90] 
+            return "BB 99 50"
         elif lastAxis == "y": #turning +y to +x or -y to -x
-            return ["c", 1, 90]
-        return ["b", 1, 90]   #turning +x to +y or -x to -y
+            return "BB 99 50"
+        return "CC 99 50"   #turning +x to +y or -x to -y
         
                     
 
@@ -163,17 +163,20 @@ class Search():
         queue = PriorityQueue()
         lastAxis = "y"
         position = self.start
-        node = [position, [["a", 0, 0]], lastAxis, 0.0, [position]] #makes node for starting position
+        node = [position, [["DD 00 00", 1]], lastAxis, 0.0, [position]] #makes node for starting position, starting movement is a stop
         queue.push(node, 0.0)    #add start node to queue
         while not queue.isEmpty():
             position, actions, lastAxis, cost, coord = queue.pop() #removes top of queue
-            if position not in visited and grid[position[0]][position[1]] != 1: #if node is visited, move onto next in queue
+            if position not in visited and grid[position[0]][position[1]] < 99 : #if node is visited, move onto next in queue
                 visited.append(position)
                 if self.checkGoal(position):
                     #print(position) #for demo purposes, prints goal node when reached
                     #print()
+                    coord += [position]
                     #print(coord)#prints coordinates ordered in path
-                    actions.pop()
+                    #actions.pop()
+                    actions = actions + [["DD 00 00", 1]]
+                    actions[0] = coord[2]
                     return actions
                 else:
                     """n's in successors are different from nodes, only one action is passed through a successor.
@@ -181,17 +184,19 @@ class Search():
                     """
                     for n in self.getSuccessors(position): #goes through each possible successor
                         if lastAxis != n[2]:
-                            tmp = actions + [self.computeTurn(lastAxis, actions, n[1])] + [["a", 1, 0]]
+                            #print(n[2], lastAxis)
+                            tmp = actions + [[self.computeTurn(lastAxis, actions, n[1]), n[1][1]]] + [n[1]]
                         else:
-                            tmp = actions + [["a", 1, 0]]
+                            tmp = actions + [n[1]]
                         tmp2 = coord + [n[4]]
                         h = self.calcManhattan(n[0])
-                        cost += 1   #updates path cost
+                        #print(coord[len(coord)-1][0])
+                        #print(self.grid[1][2])
+                        cost += 1 + self.grid[coord[len(coord)-1][0]][coord[len(coord)-1][1]] #gets weight of node, and updates path cost
                         node = (n[0], tmp, n[2], cost, tmp2) #new node w/ actions and cost
                         queue.push(node, cost + h) #pushes new node onto stack
                         #print(actions)
         return actions  #returns list of actions
-
 
 
 """
