@@ -247,6 +247,18 @@ dir_list = robot.searchA()
 #print (dir_list)
 
 """
+for item in dirList[1:]:    #first value in every path isn't used
+    print(item)
+    ser.write(item[0].encode("utf-8"))
+    time.sleep(1.65)    #needs this amount of time between commands or else it skips
+    line = ser.readline().decode('utf-8').rstrip()
+    
+    #tried doing a while loop to wait for finished command and that just didn't fucking work 
+    #while ser.in_waiting:  # Or: while ser.inWaiting():
+    #    print(ser.readline().decode('utf-8').rstrip())
+    
+    #print(line)
+    #print(item)
 #if code works, should route left around obstruction
 """
 
