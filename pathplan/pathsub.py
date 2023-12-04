@@ -172,17 +172,18 @@ class Search():
         successors = []
         y = position[0]
         x = position[1]
-        yhi = [[y + 13, x], ["AA 99 00", 1], "y", 1.0, [y, x]]
-        ylow = [[y - 13, x], ["AA 99 00", -1], "y", 1.0, [y, x]]
-        xhi = [[y, x + 13], ["AA 99 00", 1], "x", 1.0, [y, x]]
-        xlow = [[y, x - 13], ["AA 99 00", -1], "x", 1.0, [y, x]]
-        if y + 1 != len(self.grid) and y - 1 > 0: #prevents exceeding range
+        step = 2
+        yhi = [[y + step, x], ["AA 99 00", 1], "y", 1.0, [y, x]]
+        ylow = [[y - step, x], ["AA 99 00", -1], "y", 1.0, [y, x]]
+        xhi = [[y, x + step], ["AA 99 00", 1], "x", 1.0, [y, x]]
+        xlow = [[y, x - step], ["AA 99 00", -1], "x", 1.0, [y, x]]
+        if y + step <= len(grid): #prevents exceeding range
             successors.append(yhi)
-        if y != 0 and y - 1 != 0:
+        if y - step >= 0:
             successors.append(ylow)
-        if x + 1 != len(self.grid[1]) and x - 1 > 0:
+        if x + step <= len(grid[1]):
             successors.append(xhi)
-        if x != 0 and y - 1 != 0:
+        if x - step >= 0:
             successors.append(xlow)
         return successors
 
