@@ -115,18 +115,18 @@ void loop() {
     if (data.substring(0,1) == "A") {
       driveForward(99, data.substring(6,7));
       stopMoving();
-      Serial.print("AA 99 00");
+      //Serial.print("AA 99 00");
     } else if (data.substring(0,1) == "B") {
       driveLeft(99, 50);
-      Serial.print("BB 99 50");
+      //Serial.print("BB 99 50");
       stopMoving();
     } else if (data.substring(0,1) == "C") {
       driveRight(99, 50);
-      Serial.print("CC 99 50");
+      //Serial.print("CC 99 50");
       stopMoving();
     } else if (data.substring(0,1) == "D") {
       stopMoving();
-      Serial.print("DD 00 00");
+      //Serial.print("DD 00 00");
     }
     //stopMoving();
     //Serial.println("Ack");
