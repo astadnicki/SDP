@@ -1,43 +1,26 @@
+// Basic demo for accelerometer readings from Adafruit MPU6050
+
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
 Adafruit_MPU6050 mpu;
 
-int Left = 2;
-int LeftDirection = 10;
-int Right = 3;
-int RightDirection = 11;
-
-#define S0 4
-#define S1 5
-#define S2 6
-#define S3 7
-#define sensorOut 8
-
-// Stores frequency read by the photodiodes
-int redFrequency = 0;
-int greenFrequency = 0;
-int blueFrequency = 0;
-
 void setup(void) {
 
-  pinMode(Left, OUTPUT);  // Left
-  pinMode(Right, OUTPUT);  // Right
-  pinMode(LeftDirection, OUTPUT); // Left Direction
-  pinMode(RightDirection, OUTPUT); // Right Direction
+  // Driving initialization
+  // Forward driving
+  pinMode(2, OUTPUT);  // Rear Left
+  pinMode(3, OUTPUT);  // Front Left
+  pinMode(4, OUTPUT);  // Rear Right
+  pinMode(5, OUTPUT);  // Front Right
+  // Reverse driving
+  pinMode(8, OUTPUT);  // Rear Left
+  pinMode(9, OUTPUT);  // Front Left
+  pinMode(10, OUTPUT); // Rear Right
+  pinMode(11, OUTPUT); // Front Right
 
-  pinMode(S0, OUTPUT);
-  pinMode(S1, OUTPUT);
-  pinMode(S2, OUTPUT);
-  pinMode(S3, OUTPUT);
-
-  // Setting the sensorOut as an input
-  pinMode(sensorOut, INPUT);
-  
-  // Setting frequency scaling to 20%
-  digitalWrite(S0,HIGH);
-  digitalWrite(S1,LOW);
+  // 0: 
 
   Serial.begin(9600);
   /*
@@ -99,15 +82,6 @@ void loop() {
   // Characters (space in between 1st, 2nd, 3rd)
   // 1st: Command (1 character), 2nd: Speed (2 characters), 3rd: Angle (2 characters)
 
-  driveForward(99);
-  delay(500);
-  driveRight(99,50);  // 50% of pi (90 degree) angle
-  delay(500);
-  driveLeft(99,50);  // 50% of pi (90 degree) angle
-  delay(500);
-  stopMoving();
-  delay(400);
-
   delay(10);
   
   if (Serial.available() > 0) {
@@ -143,68 +117,6 @@ void loop() {
     stopMoving();
   }
   */
-
-  // Setting RED (R) filtered photodiodes to be read
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,LOW);
-  
-  // Reading the output frequency
-  redFrequency = pulseIn(sensorOut, LOW);
-  
-   // Printing the RED (R) value
-  Serial.print("R = ");
-  Serial.print(redFrequency);
-  delay(100);
-  
-  // Setting GREEN (G) filtered photodiodes to be read
-  digitalWrite(S2,HIGH);
-  digitalWrite(S3,HIGH);
-  
-  // Reading the output frequency
-  greenFrequency = pulseIn(sensorOut, LOW);
-  
-  // Printing the GREEN (G) value  
-  Serial.print(" G = ");
-  Serial.print(greenFrequency);
-  delay(100);
- 
-  // Setting BLUE (B) filtered photodiodes to be read
-  digitalWrite(S2,LOW);
-  digitalWrite(S3,HIGH);
-  
-  // Reading the output frequency
-  blueFrequency = pulseIn(sensorOut, LOW);
-  
-  // Printing the BLUE (B) value 
-  Serial.print(" B = ");
-  Serial.println(blueFrequency);
-  delay(100);
-
-  /* Get new sensor events with the readings */
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-
-  /* Print out the values */
-  Serial.print("Acceleration X: ");
-  Serial.print(a.acceleration.x);
-  Serial.print(", Y: ");
-  Serial.print(a.acceleration.y);
-  Serial.print(", Z: ");
-  Serial.print(a.acceleration.z);
-  Serial.println(" m/s^2");
-
-  Serial.print("Rotation X: ");
-  Serial.print(g.gyro.x);
-  Serial.print(", Y: ");
-  Serial.print(g.gyro.y);
-  Serial.print(", Z: ");
-  Serial.print(g.gyro.z);
-  Serial.println(" rad/s");
-
-  Serial.print("Temperature: ");
-  Serial.print(temp.temperature);
-  Serial.println(" degC");
-  
 }
 
 int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 0.7)
@@ -217,34 +129,20 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
       pulse = 130;
     }
     // HIGH all wheels forward
-    digitalWrite(LeftDirection, LOW);
-    digitalWrite(RightDirection, LOW);
-    analogWrite(Left, 255); // pulse
-    analogWrite(Right, 255); // pulse
+    analogWrite(8, 0);
+    analogWrite(9, 0);
+    analogWrite(10, 0);
+    analogWrite(11, 0);
+    analogWrite(2, pulse);
+    analogWrite(3, pulse);
+    analogWrite(4, pulse);
+    analogWrite(5, pulse);
     delay(timeDelay);
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
     float dx2 = (a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000;
     float dy2 = (a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000;
     float d = sqrt(pow(dx2, 2) + pow(dy2, 2));
-
-    // Reading color outputs
-
-    // Setting RED (R) filtered photodiodes to be read
-    digitalWrite(S2,LOW);
-    digitalWrite(S3,LOW);
-    // Reading the output frequency
-    redFrequency = pulseIn(sensorOut, LOW);
-
-    // Setting GREEN (G) filtered photodiodes to be read
-    digitalWrite(S2,HIGH);
-    digitalWrite(S3,HIGH);
-    // Reading the output frequency
-    greenFrequency = pulseIn(sensorOut, LOW);
-    
-    if ((redFrequency >= 65) && (redFrequency <= 80) && (greenFrequency >= 35) && (greenFrequency >= 40) && (blueFrequency >= 30) && (blueFrequency <= 50)) {    //we see blue sticker
-      //checking for rotations
-    }
     /*
     Serial.print("Acceleration X: ");
     Serial.print(a.acceleration.x);
@@ -261,10 +159,9 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
     */
     while (error == 1) {
       if (d < 0.2) {
-        error = 0;
-        //error = 1;
-        //timeDelay = 50; // continue running function for another 50ms
-        //delay(timeDelay);
+        error = 1;
+        timeDelay = 50; // continue running function for another 50ms
+        delay(timeDelay);
       } else {
         error = 0;
       }
@@ -285,10 +182,14 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
       pulse = 130;
     }
     // HIGH all wheels reverse
-    digitalWrite(LeftDirection, HIGH);
-    digitalWrite(RightDirection, HIGH);
-    analogWrite(Left, pulse);
-    analogWrite(Right, pulse);
+    analogWrite(2, 0);
+    analogWrite(3, 0);
+    analogWrite(4, 0);
+    analogWrite(5, 0);
+    analogWrite(8, pulse);
+    analogWrite(9, pulse);
+    analogWrite(10, pulse);
+    analogWrite(11, pulse);
     delay(timeDelay);
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
@@ -329,11 +230,13 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
       Serial.println(d);
       */
     }
+    
     //Serial.write("done");
     return 0;
   }
 }
 
+//float angle
 int driveLeft(int speed, float deg) {
   float percentAngle = deg/100;
   int timeDelay = percentAngle * 420; // 290 is the time for a 90 degree turn to occur if pulse is 580
@@ -342,10 +245,14 @@ int driveLeft(int speed, float deg) {
     pulse = 130;
   }
   int error = 1;
-  digitalWrite(RightDirection, HIGH);
-  digitalWrite(LeftDirection, LOW);
-  analogWrite(Right, 255);
-  analogWrite(Left, 255);
+  analogWrite(2, 0);
+  analogWrite(3, 0);
+  analogWrite(10, 0);
+  analogWrite(11, 0);
+  analogWrite(4, pulse);
+  analogWrite(5, pulse);
+  analogWrite(8, pulse);
+  analogWrite(9, pulse);
   delay(timeDelay);
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
@@ -360,10 +267,9 @@ int driveLeft(int speed, float deg) {
   */
   while (error == 1) {
     if (testedAngleEnd < 0.03) {
-      error = 0;
-      //error = 1;
-      //timeDelay = 50; // continue running function for 50ms to see if angle is fixed
-      //delay(timeDelay);
+      error = 1;
+      timeDelay = 50; // continue running function for 50ms to see if angle is fixed
+      delay(timeDelay);
     } else {
       error = 0;
     }
@@ -387,10 +293,14 @@ int driveRight(int speed, float deg) { // 100% means 90 degree turn
     pulse = 130;
   }
   int error = 1;
-  digitalWrite(RightDirection, LOW);
-  digitalWrite(LeftDirection, HIGH);
-  analogWrite(Right, 255); // pulse would be duty cycle in analogWrite here
-  analogWrite(Left, 255);
+  analogWrite(4, 0);
+  analogWrite(5, 0);
+  analogWrite(8, 0);
+  analogWrite(9, 0);
+  analogWrite(2, pulse);  // pulse would be duty cycle in analogWrite here
+  analogWrite(3, pulse);
+  analogWrite(10, pulse);
+  analogWrite(11, pulse);
   delay(timeDelay);
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
@@ -405,10 +315,9 @@ int driveRight(int speed, float deg) { // 100% means 90 degree turn
   */
   while (error == 1) {
     if (testedAngleEnd < 0.03) {
-      error = 0;
-      //error = 1;
-      //timeDelay = 50; // continue running function for 50ms to see if angle is fixed
-      //delay(timeDelay);
+      error = 1;
+      timeDelay = 50; // continue running function for 50ms to see if angle is fixed
+      delay(timeDelay);
     } else {
       error = 0;
     }
@@ -425,10 +334,14 @@ int driveRight(int speed, float deg) { // 100% means 90 degree turn
 }
 
 int stopMoving() {
-   digitalWrite(RightDirection, LOW);
-   digitalWrite(LeftDirection, LOW);
-   analogWrite(Right, 0);
-   analogWrite(Left, 0);
+   analogWrite(2, 0);
+   analogWrite(3, 0);
+   analogWrite(4, 0);
+   analogWrite(5, 0);
+   analogWrite(8, 0);
+   analogWrite(9, 0);
+   analogWrite(10, 0);
+   analogWrite(11, 0);
    delay(500);
    //Serial.write("done");
 }
