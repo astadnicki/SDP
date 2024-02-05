@@ -113,7 +113,8 @@ void loop() {
   if (Serial.available() > 0) {
     String data = Serial.readStringUntil('\n');
     if (data.substring(0,1) == "A") {
-      driveForward(data.substring(3,5));
+      //driveForward(data.substring(3,5));
+      driveForward(99)
       stopMoving();
       //Serial.print("AA 99 00");
     } else if (data.substring(0,1) == "B") {
