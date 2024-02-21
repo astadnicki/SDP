@@ -105,9 +105,7 @@ int counter = 0;
 
 void loop() {
 
-  Serial.println("hi");
-
-  //Serial.flush();
+  Serial.flush();
 
   // 50-99: Positive speed (50 is 0 or just weak, 99 is highest)
   // 0-49: Negative speed (0 is 0 or just week, 49 is highest)
@@ -159,7 +157,7 @@ void loop() {
     Serial.print(", Z: ");
     Serial.print(g.gyro.z);
     Serial.println("");*/
-    
+    /*
       // default z is -0.02
       counter += 1; // command is sent 10 times a second
       if (counter == 10) {  // check IMU drift every second
@@ -183,7 +181,7 @@ void loop() {
           //delay(10);
           //driveForward(data.substring(3,5).toInt());  // go back to driving forward
         }
-      }
+      }*/
       //Serial.print("AA 99 00");
     } else if (data.substring(0,1) == "B") {
       driveLeft(99, 50);
@@ -294,7 +292,7 @@ void loop() {
 }
 
 int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 0.7)
-  Serial.println("GOING FORWARD");
+  //Serial.println("GOING FORWARD");
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
   int pulse = speed;
@@ -307,18 +305,22 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
     // HIGH all wheels forward
     digitalWrite(LeftDirection, LOW);
     digitalWrite(RightDirection, LOW);
-    analogWrite(Right, 255);
+    analogWrite(Right, 220); // was 220
     analogWrite(Left, 255);
     if (g.gyro.z + 0.02 < -0.1) {  // negative z means right
       //Serial.println("TURNED SLIGHTLY RIGHT");
       // briefly drive slightly left to correct
-      analogWrite(Right, 255 - (((g.gyro.z+0.02)*0.1)*10)); // pulse // *10 is to account for strength of change in motor speed
+      //analogWrite(Right, 255 - (((g.gyro.z+0.02)*0.1)*30)); // pulse // *10 is to account for strength of change in motor speed
+      //analogWrite(Left, 255);
+      analogWrite(Right, 200);
       analogWrite(Left, 255);
     } else if (g.gyro.z + 0.02 > 0.1) { // positive z means left
       //Serial.println("TURNED SLIGHTLY LEFT");
       // briefly drive slightly right to correct
+      //analogWrite(Right, 255);
+      //analogWrite(Left, 255 - (((g.gyro.z+0.02)*0.1)*30)); // pulse // g.gyro.z+0.02)*0.1 is the radians travelled from destination
       analogWrite(Right, 255);
-      analogWrite(Left, 255 - (((g.gyro.z+0.02)*0.1)*10)); // pulse // g.gyro.z+0.02)*0.1 is the radians travelled from destination
+      analogWrite(Left, 200);
     }
     
     float d = 5; // random number lol (to get past error for debugging) (eventually from encoder)
