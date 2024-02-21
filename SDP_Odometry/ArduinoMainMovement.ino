@@ -113,19 +113,6 @@ void loop() {
   // Characters (space in between 1st, 2nd, 3rd)
   // 1st: Command (1 character), 2nd: Speed (2 characters), 3rd: Angle (2 characters)
 
-  //driveForward(99);
-  //delay(500);
-  //driveRight(99,50);  // 50% of pi (90 degree) angle
-  //delay(500);
-  //driveLeft(99,50);  // 50% of pi (90 degree) angle
-  //delay(500);
-  //stopMoving();
-  //delay(400);
-
-  //delay(10);
-
-  //float testedAngleEnd = 0;
-
       sensors_event_t a, g, temp;
       mpu.getEvent(&a, &g, &temp);
       //testedAngleEnd = sqrt(pow(g.gyro.x + 0.07, 2) + pow(g.gyro.y - 0.01, 2)) * 1 / 1000; // 1 is for time delay
@@ -196,25 +183,6 @@ void loop() {
     //stopMoving();
     //Serial.println("Ack");
   }
-  
-  /*
-  if (serialInput.substring(0,1) == "A") {
-    driveForward(serialInput.substring(2,4).toInt());
-  } else if (serialInput.substring(0,1) == "B") {
-    driveLeft(serialInput.substring(2,4).toInt(), serialInput.substring(5,7).toInt());
-  } else if (serialInput.substring(0,1) == "C") {
-    driveRight(serialInput.substring(2,4).toInt(), serialInput.substring(5,7).toInt());
-  } else if (serialInput.substring(0,1) == "D") {
-    stopMoving();
-  }
-  */
-
-
-
-
-
-
-
 /*
   
   // Setting RED (R) filtered photodiodes to be read
@@ -279,16 +247,6 @@ void loop() {
   Serial.println(" degC");
   
 */
-
-
-
-
-
-
-
-
-
-  
 }
 
 int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 0.7)
