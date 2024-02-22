@@ -63,7 +63,6 @@ void setup(void) {
   //stopMoving();
 
   //CORRECT LOOP SEQUENCE
-  //digitalWrite(2, HIGH);
   /*
   driveForward(99);
   stopMoving();
@@ -113,6 +112,19 @@ void loop() {
   // Characters (space in between 1st, 2nd, 3rd)
   // 1st: Command (1 character), 2nd: Speed (2 characters), 3rd: Angle (2 characters)
 
+  //driveForward(99);
+  //delay(500);
+  //driveRight(99,50);  // 50% of pi (90 degree) angle
+  //delay(500);
+  //driveLeft(99,50);  // 50% of pi (90 degree) angle
+  //delay(500);
+  //stopMoving();
+  //delay(400);
+
+  //delay(10);
+
+  //float testedAngleEnd = 0;
+
       sensors_event_t a, g, temp;
       mpu.getEvent(&a, &g, &temp);
       //testedAngleEnd = sqrt(pow(g.gyro.x + 0.07, 2) + pow(g.gyro.y - 0.01, 2)) * 1 / 1000; // 1 is for time delay
@@ -135,40 +147,6 @@ void loop() {
     String data = Serial.readStringUntil('\n');
     if (data.substring(0,1) == "A") {
       driveForward(data.substring(3,5).toInt()); // initial forward command
-      //sensors_event_t a, g, temp;
-      //mpu.getEvent(&a, &g, &temp);
-    /*Serial.print("FORWARD Rotation X: ");
-    Serial.print(g.gyro.x);
-    Serial.print(", Y: ");
-    Serial.print(g.gyro.y);
-    Serial.print(", Z: ");
-    Serial.print(g.gyro.z);
-    Serial.println("");*/
-    /*
-      // default z is -0.02
-      counter += 1; // command is sent 10 times a second
-      if (counter == 10) {  // check IMU drift every second
-        counter = 0;  // reset counter back to 0;
-        if (g.gyro.z + 0.02 < -0.1) {  // negative z means right
-          //Serial.println("TURNED SLIGHTLY RIGHT");
-          // briefly drive slightly left to correct
-          digitalWrite(RightDirection, HIGH);
-          digitalWrite(LeftDirection, HIGH); // LOW
-          analogWrite(Right, 255);
-          analogWrite(Left, 130);//10 // g.gyro.z * 100
-          //delay(10);
-          //driveForward(data.substring(3,5).toInt());  // go back to driving forward
-        } else if (g.gyro.z + 0.02 > 0.1) { // positive z means left
-          //Serial.println("TURNED SLIGHTLY LEFT");
-          // briefly drive slightly right to correct
-          digitalWrite(RightDirection, HIGH); // LOW
-          digitalWrite(LeftDirection, HIGH);
-          analogWrite(Right, 130);//10 // g.gyro.z * 100 // under 130 is much slower
-          analogWrite(Left, 255);
-          //delay(10);
-          //driveForward(data.substring(3,5).toInt());  // go back to driving forward
-        }
-      }*/
       //Serial.print("AA 99 00");
     } else if (data.substring(0,1) == "B") {
       driveLeft(99, 50);
@@ -177,12 +155,21 @@ void loop() {
       driveRight(99, 50);
       //Serial.print("CC 99 50");
     } else if (data.substring(0,1) == "D") {
-      stopMoving();
+      //stopMoving();
+      analogWrite(Right, 0);
+      analogWrite(Left, 0);
       //Serial.print("DD 00 00");
     }
     //stopMoving();
     //Serial.println("Ack");
   }
+
+
+
+
+
+
+
 /*
   
   // Setting RED (R) filtered photodiodes to be read
@@ -247,12 +234,23 @@ void loop() {
   Serial.println(" degC");
   
 */
+
+
+
+
+
+
+
+
+
+  
 }
 
 int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 0.7)
   //Serial.println("GOING FORWARD");
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
+  //THINGS TO DO
+  // 50-99 speed increase/decrease, 0-49 speed increase/decrease
+  // slow start after stopMoving command
   int pulse = speed;
   int error = 1;
   if (speed >= 50) {
@@ -263,22 +261,22 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
     // HIGH all wheels forward
     digitalWrite(LeftDirection, LOW);
     digitalWrite(RightDirection, LOW);
-    analogWrite(Right, 220); // was 220
-    analogWrite(Left, 255);
-    if (g.gyro.z + 0.02 < -0.1) {  // negative z means right
+    //analogWrite(Right, 220); // was 220
+    analogWrite(Right, 243); // 2443
+    analogWrite(Left, 255); // 255
+    sensors_event_t a, g, temp;
+    mpu.getEvent(&a, &g, &temp);
+    
+    if (g.gyro.z + 0.02 < -0.2) {  // negative z means right
       //Serial.println("TURNED SLIGHTLY RIGHT");
       // briefly drive slightly left to correct
-      //analogWrite(Right, 255 - (((g.gyro.z+0.02)*0.1)*30)); // pulse // *10 is to account for strength of change in motor speed
-      //analogWrite(Left, 255);
-      analogWrite(Right, 200);
-      analogWrite(Left, 255);
-    } else if (g.gyro.z + 0.02 > 0.1) { // positive z means left
+      analogWrite(Right, 255);
+      analogWrite(Left, 255 - (((g.gyro.z+0.02)*0.1)*5)); // pulse // g.gyro.z+0.02)*0.1 is the radians travelled from destination
+    } else if (g.gyro.z + 0.02 > 0.2) { // positive z means left
       //Serial.println("TURNED SLIGHTLY LEFT");
       // briefly drive slightly right to correct
-      //analogWrite(Right, 255);
-      //analogWrite(Left, 255 - (((g.gyro.z+0.02)*0.1)*30)); // pulse // g.gyro.z+0.02)*0.1 is the radians travelled from destination
-      analogWrite(Right, 255);
-      analogWrite(Left, 200);
+      analogWrite(Right, 255 - (((g.gyro.z+0.02)*0.1)*5)); // pulse // *10 is to account for strength of change in motor speed
+      analogWrite(Left, 255); // pulse // g.gyro.z+0.02)*0.1 is the radians travelled from destination
     }
     
     float d = 5; // random number lol (to get past error for debugging) (eventually from encoder)
