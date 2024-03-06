@@ -142,7 +142,7 @@ void loop() {
     Serial.print(counter);
     Serial.println("");*/
     
-  
+  /*
   if (Serial.available() > 0) {
     String data = Serial.readStringUntil('\n');
     if (data.substring(0,1) == "A") {
@@ -163,7 +163,29 @@ void loop() {
     //stopMoving();
     //Serial.println("Ack");
   }
+  */
 
+  //Serial.print("AA 99 00");
+  // WHAT HAVE WE BEEN SENDING TO THE ARDUINO?
+
+  if (Serial.available() > 0) {
+    String data = Serial.readStringUntil('\n');
+    if (data.substring(0,1) == "A") {
+      driveForward(data.substring(3,5).toInt()); // initial forward command
+      //Serial.println(data.substring(3,5).toInt());
+    } else if (data.substring(0,1) == "B") {
+      // drive left
+      driveTurn(data.substring(3,5).toInt(), data.substring(6,8).toInt());
+      //Serial.println(data.substring(6,8).toInt());
+    } else if (data.substring(0,1) == "C") {
+      // drive right
+      driveTurn(data.substring(3,5).toInt(), data.substring(6,8).toInt());
+      //Serial.println(data.substring(6,8).toInt());
+    } else if (data.substring(0,1) == "D") {
+      analogWrite(Right, 0);
+      analogWrite(Left, 0);
+    }
+  }
 
 
 
@@ -247,34 +269,37 @@ void loop() {
 }
 
 int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 0.7)
-  //Serial.println("GOING FORWARD");
   //THINGS TO DO
   // 50-99 speed increase/decrease, 0-49 speed increase/decrease
   // slow start after stopMoving command
-  int pulse = speed;
-  int error = 1;
+  float l = 0;
+  float r = 0;
   if (speed >= 50) {
-    pulse = ((speed+100)/200) * 255;
-    if (pulse < 130) {
-      pulse = 130;
+    if (speed == 99) {
+      l = 255;  // default for going straight
+      r = 243;  // default for going straight
+    } else {
+      Serial.println(speed);
+      l = (speed - 50) * 5.1; // converts from percentage to number from 0-255 255/50 = 5.1
+      Serial.println(l);
+      r = (speed - 50) * 4.86; // converts from percentage to number from 0-243 243/50 = 4.86
+      Serial.println(r);
     }
     // HIGH all wheels forward
     digitalWrite(LeftDirection, LOW);
     digitalWrite(RightDirection, LOW);
     //analogWrite(Right, 220); // was 220
-    analogWrite(Right, 243); // 2443
-    analogWrite(Left, 255); // 255
+    analogWrite(Right, r); // 243
+    analogWrite(Left, l); // 255
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
     
     if (g.gyro.z + 0.02 < -0.2) {  // negative z means right
-      //Serial.println("TURNED SLIGHTLY RIGHT");
-      // briefly drive slightly left to correct
+      // briefly drive slightly left to correct rigth turn drift
       analogWrite(Right, 255);
       analogWrite(Left, 255 - (((g.gyro.z+0.02)*0.1)*5)); // pulse // g.gyro.z+0.02)*0.1 is the radians travelled from destination
     } else if (g.gyro.z + 0.02 > 0.2) { // positive z means left
-      //Serial.println("TURNED SLIGHTLY LEFT");
-      // briefly drive slightly right to correct
+      // briefly drive slightly right to correct left turn drift
       analogWrite(Right, 255 - (((g.gyro.z+0.02)*0.1)*5)); // pulse // *10 is to account for strength of change in motor speed
       analogWrite(Left, 255); // pulse // g.gyro.z+0.02)*0.1 is the radians travelled from destination
     }
@@ -299,39 +324,21 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
       //checking for rotations
     }
     
-    while (error == 1) {
-      if (d < 0.2) {
-        error = 0;
-        //error = 1;
-        //timeDelay = 50; // continue running function for another 50ms
-        //delay(timeDelay);
-      } else {
-        error = 0;
-      }
-    }
   }
   if (speed < 50) {
-    pulse = (((speed*2)+100)/200) * 255;
-    if (pulse < 130) {
-      pulse = 130;
+    if (speed == 49) {
+      l = 255;  // default for going straight
+      r = 243;  // default for going straight
+    } else {
+      l = speed * 5.1; // converts from percentage to number from 0-255 255/50 = 5.1
+      r = speed * 4.86; // converts from percentage to number from 0-243 243/50 = 4.86
     }
     // HIGH all wheels reverse
     digitalWrite(LeftDirection, HIGH);
     digitalWrite(RightDirection, HIGH);
-    analogWrite(Left, 255); // pulse
-    analogWrite(Right, 255); // pulse
-    float d = 5; // random number lol (to get past error for debugging)
-    
-    while (error == 1) {
-      if (d < 0.2) {
-        error = 1;
-        //timeDelay = 50; // continue running function for another 50ms
-        //delay(timeDelay);
-      } else {
-        error = 0;
-      }
-    }
-    //Serial.write("done");
+    analogWrite(Left, l); // pulse
+    analogWrite(Right, r); // pulse
+
     return 0;
   }
   Serial.flush();
@@ -349,19 +356,7 @@ int driveLeft(int speed, float deg) {
   digitalWrite(LeftDirection, HIGH);
   analogWrite(Right, 255);
   analogWrite(Left, 255);
-  /*
-  while (error == 1) {
-    if (testedAngleEnd < 0.03) {
-      error = 0;
-      //error = 1;
-      //timeDelay = 50; // continue running function for 50ms to see if angle is fixed
-      //delay(timeDelay);
-    } else {
-      error = 0;
-    }
-    
-  }*/
-  //Serial.write("done");
+  
   return 0;
   Serial.flush();
 }
@@ -378,21 +373,39 @@ int driveRight(int speed, float deg) { // 100% means 90 degree turn
   digitalWrite(LeftDirection, LOW);
   analogWrite(Right, 255); // pulse would be duty cycle in analogWrite here
   analogWrite(Left, 255);
-  /*
-  while (error == 1) {
-    if (testedAngleEnd < 0.03) {
-      error = 0;
-      //error = 1;
-      //timeDelay = 50; // continue running function for 50ms to see if angle is fixed
-      //delay(timeDelay);
-    } else {
-      error = 0;
-    }
-    
-  }*/
-  //Serial.write("done");
+
   return 0;
   Serial.flush();
+}
+
+int driveTurn(int left, int right) {
+    int l = left * 2.55; // converts from percentage to number from 0-255 255/100 = 2.55
+    int r = right * 2.43; // converts from percentage to number from 0-243 243/100 = 2.43
+
+    if (left >= 50) {
+      digitalWrite(LeftDirection, LOW);
+      l = left * 5.1
+    } else {
+      digitalWrite(RightDirection, HIGH);
+      l = left * 5.1
+    }
+
+    if (right >= 50) {
+      digitalWrite(LeftDirection, LOW);
+      l = right * 4.86
+    } else {
+      digitalWrite(RightDirection, HIGH);
+      l = right * 4.86
+    }
+    
+    // HIGH all wheels forward
+    digitalWrite(LeftDirection, LOW);
+    digitalWrite(RightDirection, LOW);
+    //analogWrite(Right, 220); // was 220
+    analogWrite(Right, r); // 243
+    analogWrite(Left, l); // 255
+
+    if 
 }
 
 int stopMoving() {
@@ -400,8 +413,7 @@ int stopMoving() {
    digitalWrite(LeftDirection, LOW);
    analogWrite(Right, 0);
    analogWrite(Left, 0);
-   //delay(1);
-   //Serial.write("done");
+
    Serial.flush();
 }
 
