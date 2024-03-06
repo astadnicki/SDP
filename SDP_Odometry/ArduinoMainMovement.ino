@@ -4,14 +4,14 @@
 
 Adafruit_MPU6050 mpu;
 
-int Left = 2;
-int LeftDirection = 10;
-int Right = 3;
-int RightDirection = 11;
+int Right = 5; // 5 drives the right motor when going forward
+int RightDirection = 10; // controls the direction of the right motor
+int Left = 6; // was 3 // 6 drives the left motor when going forward
+int LeftDirection = 11; // controls the direction of the left motor
 
-#define S0 4
-#define S1 5
-#define S2 6
+#define S0 3 // was 4
+#define S1 2
+#define S2 4
 #define S3 7
 #define sensorOut 8
 
@@ -22,10 +22,10 @@ int blueFrequency = 0;
 
 void setup(void) {
 
-  pinMode(Left, OUTPUT);  // Left
-  pinMode(Right, OUTPUT);  // Right
-  pinMode(LeftDirection, OUTPUT); // Left Direction
-  pinMode(RightDirection, OUTPUT); // Right Direction
+  pinMode(Left, OUTPUT);  // Left motor
+  pinMode(Right, OUTPUT);  // Right motor
+  pinMode(LeftDirection, OUTPUT); // Left motor Direction
+  pinMode(RightDirection, OUTPUT); // Right motor Direction
 
   pinMode(S0, OUTPUT);
   pinMode(S1, OUTPUT);
@@ -63,7 +63,6 @@ void setup(void) {
   //stopMoving();
 
   //CORRECT LOOP SEQUENCE
-  //digitalWrite(2, HIGH);
   /*
   driveForward(99);
   stopMoving();
@@ -82,17 +81,31 @@ void setup(void) {
   driveRight(99,50);
   stopMoving();
 */
+
+  //Simple Test Sequence
   //driveForward(99);
-  //driveRight(99,50);  // 50% of pi (90 degree) angle
-  //driveLeft(99,50);  // 50% of pi (90 degree) angle
+  //delay(500);
   //stopMoving();
+  /*
+  delay(1000);
+  driveRight(99,50);  // 50% of pi (90 degree) angle
+  delay(500);
+  stopMoving();
+  delay(1000);
+  driveLeft(99,50);  // 50% of pi (90 degree) angle
+  delay(500);
+  stopMoving();
+  */
   
   delay(100);
 }
 
+int counter = 0;
+
 void loop() {
 
-  //analogWrite(2, 255);
+  Serial.flush();
+
   // 50-99: Positive speed (50 is 0 or just weak, 99 is highest)
   // 0-49: Negative speed (0 is 0 or just week, 49 is highest)
   // Commands: A is forward, B is right, C is left, D is nothing (empty) can drop the rest of the characters
@@ -108,44 +121,79 @@ void loop() {
   //stopMoving();
   //delay(400);
 
-  delay(10);
-  
+  //delay(10);
+
+  //float testedAngleEnd = 0;
+
+      sensors_event_t a, g, temp;
+      mpu.getEvent(&a, &g, &temp);
+      //testedAngleEnd = sqrt(pow(g.gyro.x + 0.07, 2) + pow(g.gyro.y - 0.01, 2)) * 1 / 1000; // 1 is for time delay
+      // if needed: https://robotics.stackexchange.com/questions/21988/determining-the-turn-of-robot-using-gyroscope-and-accelerometer-data
+
+    /*Serial.print("Rotation X: ");
+    Serial.print(g.gyro.x);
+    Serial.print(", Y: ");
+    Serial.print(g.gyro.y);
+    Serial.print(", Z: ");
+    Serial.print(g.gyro.z);
+    Serial.println("");*/
+/*
+    Serial.print("Counter");
+    Serial.print(counter);
+    Serial.println("");*/
+    
+  /*
   if (Serial.available() > 0) {
     String data = Serial.readStringUntil('\n');
     if (data.substring(0,1) == "A") {
-      driveForward(data.substring(3,5).toInt());  //should 
-      //driveForward(99);
-      stopMoving();
+      driveForward(data.substring(3,5).toInt()); // initial forward command
       //Serial.print("AA 99 00");
     } else if (data.substring(0,1) == "B") {
       driveLeft(99, 50);
       //Serial.print("BB 99 50");
-      stopMoving();
     } else if (data.substring(0,1) == "C") {
       driveRight(99, 50);
       //Serial.print("CC 99 50");
-      stopMoving();
     } else if (data.substring(0,1) == "D") {
-      stopMoving();
+      //stopMoving();
+      analogWrite(Right, 0);
+      analogWrite(Left, 0);
       //Serial.print("DD 00 00");
     }
     //stopMoving();
     //Serial.println("Ack");
   }
-  
-  /*
-  if (serialInput.substring(0,1) == "A") {
-    driveForward(serialInput.substring(2,4).toInt());
-  } else if (serialInput.substring(0,1) == "B") {
-    driveLeft(serialInput.substring(2,4).toInt(), serialInput.substring(5,7).toInt());
-  } else if (serialInput.substring(0,1) == "C") {
-    driveRight(serialInput.substring(2,4).toInt(), serialInput.substring(5,7).toInt());
-  } else if (serialInput.substring(0,1) == "D") {
-    stopMoving();
-  }
   */
 
-  /*
+  //Serial.print("AA 99 00");
+  // WHAT HAVE WE BEEN SENDING TO THE ARDUINO?
+
+  if (Serial.available() > 0) {
+    String data = Serial.readStringUntil('\n');
+    if (data.substring(0,1) == "A") {
+      driveForward(data.substring(3,5).toInt()); // initial forward command
+      //Serial.println(data.substring(3,5).toInt());
+    } else if (data.substring(0,1) == "B") {
+      // drive left
+      driveTurn(data.substring(3,5).toInt(), data.substring(6,8).toInt());
+      //Serial.println(data.substring(6,8).toInt());
+    } else if (data.substring(0,1) == "C") {
+      // drive right
+      driveTurn(data.substring(3,5).toInt(), data.substring(6,8).toInt());
+      //Serial.println(data.substring(6,8).toInt());
+    } else if (data.substring(0,1) == "D") {
+      analogWrite(Right, 0);
+      analogWrite(Left, 0);
+    }
+  }
+
+
+
+
+
+
+/*
+  
   // Setting RED (R) filtered photodiodes to be read
   digitalWrite(S2,LOW);
   digitalWrite(S3,LOW);
@@ -206,30 +254,58 @@ void loop() {
   Serial.print("Temperature: ");
   Serial.print(temp.temperature);
   Serial.println(" degC");
-  */
+  
+*/
+
+
+
+
+
+
+
+
+
+  
 }
 
 int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 0.7)
-  int pulse = speed;
-  int error = 1;
-  int timeDelay = 350;
+  //THINGS TO DO
+  // 50-99 speed increase/decrease, 0-49 speed increase/decrease
+  // slow start after stopMoving command
+  float l = 0;
+  float r = 0;
   if (speed >= 50) {
-    pulse = ((speed+100)/200) * 255;
-    if (pulse < 130) {
-      pulse = 130;
+    if (speed == 99) {
+      l = 255;  // default for going straight
+      r = 243;  // default for going straight
+    } else {
+      Serial.println(speed);
+      l = (speed - 50) * 5.1; // converts from percentage to number from 0-255 255/50 = 5.1
+      Serial.println(l);
+      r = (speed - 50) * 4.86; // converts from percentage to number from 0-243 243/50 = 4.86
+      Serial.println(r);
     }
     // HIGH all wheels forward
     digitalWrite(LeftDirection, LOW);
     digitalWrite(RightDirection, LOW);
-    analogWrite(Left, 255); // pulse
-    analogWrite(Right, 255); // pulse
-    delay(500); // timeDelay
+    //analogWrite(Right, 220); // was 220
+    analogWrite(Right, r); // 243
+    analogWrite(Left, l); // 255
     sensors_event_t a, g, temp;
     mpu.getEvent(&a, &g, &temp);
-    float dx2 = (a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000;
-    float dy2 = (a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000;
-    float d = sqrt(pow(dx2, 2) + pow(dy2, 2));
-
+    
+    if (g.gyro.z + 0.02 < -0.2) {  // negative z means right
+      // briefly drive slightly left to correct rigth turn drift
+      analogWrite(Right, 255);
+      analogWrite(Left, 255 - (((g.gyro.z+0.02)*0.1)*5)); // pulse // g.gyro.z+0.02)*0.1 is the radians travelled from destination
+    } else if (g.gyro.z + 0.02 > 0.2) { // positive z means left
+      // briefly drive slightly right to correct left turn drift
+      analogWrite(Right, 255 - (((g.gyro.z+0.02)*0.1)*5)); // pulse // *10 is to account for strength of change in motor speed
+      analogWrite(Left, 255); // pulse // g.gyro.z+0.02)*0.1 is the radians travelled from destination
+    }
+    
+    float d = 5; // random number lol (to get past error for debugging) (eventually from encoder)
+    
     // Reading color outputs
 
     // Setting RED (R) filtered photodiodes to be read
@@ -247,91 +323,22 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
     if ((redFrequency >= 65) && (redFrequency <= 80) && (greenFrequency >= 35) && (greenFrequency >= 40) && (blueFrequency >= 30) && (blueFrequency <= 50)) {    //we see blue sticker
       //checking for rotations
     }
-    /*
-    Serial.print("Acceleration X: ");
-    Serial.print(a.acceleration.x);
-    Serial.print(", Y: ");
-    Serial.print(a.acceleration.y);
-    Serial.print(", Z: ");
-    Serial.print(a.acceleration.z);
-    Serial.println("distance x:");
-    Serial.println(dx2);
-    Serial.println("distance y:");
-    Serial.println(dy2);
-    Serial.println("total distance:");
-    Serial.println(d);
-    */
-    while (error == 1) {
-      if (d < 0.2) {
-        error = 0;
-        //error = 1;
-        //timeDelay = 50; // continue running function for another 50ms
-        //delay(timeDelay);
-      } else {
-        error = 0;
-      }
-      sensors_event_t a, g, temp;
-      mpu.getEvent(&a, &g, &temp);
-      dx2 = dx2 + ((a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000);
-      dy2 = dy2 + ((a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000);
-      d = sqrt(pow(dx2, 2) + pow(dy2, 2));
-      /*
-      Serial.println("total distance:");
-      Serial.println(d);
-      */
-    }
+    
   }
   if (speed < 50) {
-    pulse = (((speed*2)+100)/200) * 255;
-    if (pulse < 130) {
-      pulse = 130;
+    if (speed == 49) {
+      l = 255;  // default for going straight
+      r = 243;  // default for going straight
+    } else {
+      l = speed * 5.1; // converts from percentage to number from 0-255 255/50 = 5.1
+      r = speed * 4.86; // converts from percentage to number from 0-243 243/50 = 4.86
     }
     // HIGH all wheels reverse
     digitalWrite(LeftDirection, HIGH);
     digitalWrite(RightDirection, HIGH);
-    analogWrite(Left, pulse);
-    analogWrite(Right, pulse);
-    delay(500); // timeDelay
-    sensors_event_t a, g, temp;
-    mpu.getEvent(&a, &g, &temp);
-    float dx2 = (a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.x - 0.44)*timeDelay*timeDelay/1000000;
-    float dy2 = (a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.y + 0.66)*timeDelay*timeDelay/1000000;
-    float d = sqrt(pow(dx2, 2) + pow(dy2, 2));
-    //Serial.println(dx1);
-    //Serial.println(dy1);
-    /*
-    Serial.print("Acceleration X: ");
-    Serial.print(a.acceleration.x);
-    Serial.print(", Y: ");
-    Serial.print(a.acceleration.y);
-    Serial.print(", Z: ");
-    Serial.print(a.acceleration.z);
-    Serial.println("distance x:");
-    Serial.println(dx2);
-    Serial.println("distance y:");
-    Serial.println(dy2);
-    Serial.println("total distance:");
-    Serial.println(d);
-    */
-    while (error == 1) {
-      if (d < 0.2) {
-        error = 1;
-        timeDelay = 50; // continue running function for another 50ms
-        delay(timeDelay);
-      } else {
-        error = 0;
-      }
-      sensors_event_t a, g, temp;
-      mpu.getEvent(&a, &g, &temp);
-      dx2 = dx2 + ((a.acceleration.x)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.x)*timeDelay*timeDelay/1000000);
-      dy2 = dy2 + ((a.acceleration.y)*timeDelay*timeDelay/1000000 + 0.5*(a.acceleration.y)*timeDelay*timeDelay/1000000); // Add distance to prior distance traveled
-      d = sqrt(pow(dx2, 2) + pow(dy2, 2));
-      /*
-      Serial.println("total distance:");
-      Serial.println(d);
-      */
-    }
-    //Serial.write("done");
+    analogWrite(Left, l); // pulse
+    analogWrite(Right, r); // pulse
+
     return 0;
   }
   Serial.flush();
@@ -345,40 +352,11 @@ int driveLeft(int speed, float deg) {
     pulse = 130;
   }
   int error = 1;
-  digitalWrite(RightDirection, HIGH);
-  digitalWrite(LeftDirection, LOW);
+  digitalWrite(RightDirection, LOW);
+  digitalWrite(LeftDirection, HIGH);
   analogWrite(Right, 255);
   analogWrite(Left, 255);
-  delay(500); // timeDelay
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  float testedAngleEnd = sqrt(pow(g.gyro.x + 0.06, 2) + pow(g.gyro.y - 0.01, 2)) * timeDelay / 1000; // Math for angles might be wrong, way to low for #s
-  /*
-  Serial.print("Rotation X: ");
-  Serial.print(g.gyro.x);
-  Serial.print(", Y: ");
-  Serial.print(g.gyro.y);
-  Serial.print("testedAngleEnd");
-  Serial.println(testedAngleEnd);
-  */
-  while (error == 1) {
-    if (testedAngleEnd < 0.03) {
-      error = 0;
-      //error = 1;
-      //timeDelay = 50; // continue running function for 50ms to see if angle is fixed
-      //delay(timeDelay);
-    } else {
-      error = 0;
-    }
-    sensors_event_t a, g, temp;
-    mpu.getEvent(&a, &g, &temp);
-    testedAngleEnd = testedAngleEnd + (sqrt(pow(g.gyro.x + 0.06, 2) + pow(g.gyro.y - 0.01, 2)) * timeDelay / 1000);
-    /*
-    Serial.print("testedAngleEnd CHECK");
-    Serial.println(testedAngleEnd);
-    */
-  }
-  //Serial.write("done");
+  
   return 0;
   Serial.flush();
 }
@@ -391,42 +369,43 @@ int driveRight(int speed, float deg) { // 100% means 90 degree turn
     pulse = 130;
   }
   int error = 1;
-  digitalWrite(RightDirection, LOW);
-  digitalWrite(LeftDirection, HIGH);
+  digitalWrite(RightDirection, HIGH);
+  digitalWrite(LeftDirection, LOW);
   analogWrite(Right, 255); // pulse would be duty cycle in analogWrite here
   analogWrite(Left, 255);
-  delay(500); // timeDelay
-  sensors_event_t a, g, temp;
-  mpu.getEvent(&a, &g, &temp);
-  float testedAngleEnd = sqrt(pow(g.gyro.x + 0.06, 2) + pow(g.gyro.y - 0.01, 2)) * timeDelay / 1000;
-  /*
-  Serial.print("Rotation X: ");
-  Serial.print(g.gyro.x);
-  Serial.print(", Y: ");
-  Serial.print(g.gyro.y);
-  Serial.print("testedAngleEnd");
-  Serial.println(testedAngleEnd);
-  */
-  while (error == 1) {
-    if (testedAngleEnd < 0.03) {
-      error = 0;
-      //error = 1;
-      //timeDelay = 50; // continue running function for 50ms to see if angle is fixed
-      //delay(timeDelay);
-    } else {
-      error = 0;
-    }
-    sensors_event_t a, g, temp;
-    mpu.getEvent(&a, &g, &temp);
-    testedAngleEnd = testedAngleEnd + (sqrt(pow(g.gyro.x + 0.06, 2) + pow(g.gyro.y - 0.01, 2)) * timeDelay / 1000);
-    /*
-    Serial.print("testedAngleEnd CHECK");
-    Serial.println(testedAngleEnd);
-    */
-  }
-  //Serial.write("done");
+
   return 0;
   Serial.flush();
+}
+
+int driveTurn(int left, int right) {
+    int l = left * 2.55; // converts from percentage to number from 0-255 255/100 = 2.55
+    int r = right * 2.43; // converts from percentage to number from 0-243 243/100 = 2.43
+
+    if (left >= 50) {
+      digitalWrite(LeftDirection, LOW);
+      l = left * 5.1
+    } else {
+      digitalWrite(RightDirection, HIGH);
+      l = left * 5.1
+    }
+
+    if (right >= 50) {
+      digitalWrite(LeftDirection, LOW);
+      l = right * 4.86
+    } else {
+      digitalWrite(RightDirection, HIGH);
+      l = right * 4.86
+    }
+    
+    // HIGH all wheels forward
+    digitalWrite(LeftDirection, LOW);
+    digitalWrite(RightDirection, LOW);
+    //analogWrite(Right, 220); // was 220
+    analogWrite(Right, r); // 243
+    analogWrite(Left, l); // 255
+
+    if 
 }
 
 int stopMoving() {
@@ -434,8 +413,7 @@ int stopMoving() {
    digitalWrite(LeftDirection, LOW);
    analogWrite(Right, 0);
    analogWrite(Left, 0);
-   delay(1);
-   //Serial.write("done");
+
    Serial.flush();
 }
 
