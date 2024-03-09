@@ -8,6 +8,7 @@ def generate_launch_description():
     default_model_path = os.path.join(pkg_share, 'src/description/red_robot_description.urdf')
     default_rviz_config_path = os.path.join(pkg_share, 'rviz/urdf_config.rviz')
     robot_localization_file_path = os.path.join(pkg_share, 'config/ekf_with_gps.yaml') 
+    use_sim_time = LaunchConfiguration('use_sim_time')
 
     robot_state_publisher_node = launch_ros.actions.Node(
         package='robot_state_publisher',
