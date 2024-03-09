@@ -82,5 +82,8 @@ def generate_launch_description():
         joint_state_publisher_node,
         joint_state_publisher_gui_node,
         robot_state_publisher_node,
-        rviz_node
+        rviz_node,
+        start_robot_localization_local_cmd,
+        start_robot_localization_global_cmd,
+        start_navsat_transform_cmd
     ])
