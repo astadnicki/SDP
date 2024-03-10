@@ -2,13 +2,14 @@ import launch
 from launch.substitutions import Command, LaunchConfiguration
 import launch_ros
 import os
+from launch_ros.actions import Node
 
 def generate_launch_description():
     pkg_share = launch_ros.substitutions.FindPackageShare(package='red_robot_sdp').find('red_robot_sdp')
     default_model_path = os.path.join(pkg_share, 'src/description/red_robot_description.urdf')
     default_rviz_config_path = os.path.join(pkg_share, 'rviz/urdf_config.rviz')
     robot_localization_file_path = os.path.join(pkg_share, 'config/ekf_with_gps.yaml') 
-    use_sim_time = LaunchConfiguration('use_sim_time')
+    #use_sim_time = LaunchConfiguration('use_sim_time')
 
     robot_state_publisher_node = launch_ros.actions.Node(
         package='robot_state_publisher',
@@ -36,42 +37,40 @@ def generate_launch_description():
         arguments=['-d', LaunchConfiguration('rvizconfig')],
     )
     
-    # Start the navsat transform node which converts GPS data into the world coordinate frame
-    start_navsat_transform_cmd = Node(
+    start_navsat_transform_node = launch_ros.actions.Node(
         package='robot_localization',
         executable='navsat_transform_node',
         name='navsat_transform',
         output='screen',
-        parameters=[robot_localization_file_path, 
-        {'use_sim_time': use_sim_time}],
+        parameters=[robot_localization_file_path],
         remappings=[('imu', 'imu/data'),
-                    ('fix', 'fix'), 
+                    ('gps/fix', 'gps/fix'), 
                     ('gps/filtered', 'gps/filtered'),
                     ('odometry/gps', 'odometry/gps'),
                     ('odometry/filtered', 'odometry/global')]
     )
     # Start robot localization using an Extended Kalman filter...map->odom transform
-    start_robot_localization_global_cmd = Node(
+    start_robot_localization_global_node = launch_ros.actions.Node(
         package='robot_localization',
         executable='ekf_node',
         name='ekf_filter_node_map',
         output='screen',
-        parameters=[robot_localization_file_path, 
-        {'use_sim_time': use_sim_time}],
+        parameters=[robot_localization_file_path],
         remappings=[('odometry/filtered', 'odometry/global'),
-                    ('/set_pose', '/initialpose')])
+                    ('/set_pose', '/initialpose')]
+    )
 
     # Start robot localization using an Extended Kalman filter...odom->base_footprint transform
-    start_robot_localization_local_cmd = Node(
+    start_robot_localization_local_node = launch_ros.actions.Node(
         package='robot_localization',
         executable='ekf_node',
         name='ekf_filter_node_odom',
         output='screen',
-        parameters=[robot_localization_file_path, 
-        {'use_sim_time': use_sim_time}],
+        parameters=[robot_localization_file_path],
         remappings=[('odometry/filtered', 'odometry/local'),
-                    ('/set_pose', '/initialpose')])
-
+                    ('/set_pose', '/initialpose')]
+     )
+     
 
     return launch.LaunchDescription([
         launch.actions.DeclareLaunchArgument(name='gui', default_value='True',
@@ -84,7 +83,39 @@ def generate_launch_description():
         joint_state_publisher_gui_node,
         robot_state_publisher_node,
         rviz_node,
-        start_robot_localization_local_cmd,
-        start_robot_localization_global_cmd,
-        start_navsat_transform_cmd
+        start_navsat_transform_node,
+        start_robot_localization_local_node,
+        start_robot_localization_global_node,
+        
+        
+        #Node(
+         #   name='rplidar_composition',
+          #  package='rplidar_ros',
+           # executable='rplidar_composition',
+            #output='screen',
+            #parameters=[{
+             #   'serial_port': '/dev/ttyUSB1',
+              #  'serial_baudrate': 115200,  # A1 / A2
+                # 'serial_baudrate': 256000, # A3
+               # 'frame_id': 'laser',
+                #'inverted': False,
+                #'angle_compensate': True,
+                #'scan_mode': 'Boost',
+           # }],
+        #),
+        
+        #Node(
+         #       package='rf2o_laser_odometry',
+          #      executable='rf2o_laser_odometry_node',
+           #     name='rf2o_laser_odometry',
+            #    output='screen',
+             #   parameters=[{
+              #      'laser_scan_topic' : '/scan',
+               #     'odom_topic' : '/odom_rf2o',
+                #    'publish_tf' : True,
+                 #   'base_frame_id' : 'base_link',
+                  #  'odom_frame_id' : 'odom',
+                   # 'init_pose_from_topic' : '',
+                    #'freq' : 20.0}],
+            #),
     ])
