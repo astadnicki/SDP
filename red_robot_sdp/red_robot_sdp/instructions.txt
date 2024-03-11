@@ -1,7 +1,0 @@
-sudo chmod 666 /dev/ttyUSB0
-ros2 launch rplidar_ros rplidar.launch.py 
-ros2 launch rf2o_laser_odometry rf2o_laser_odometry.launch.py laser_scan_topic:=scan
-ros2 run tf2_ros static_transform_publisher 0 0 0 0 0 0 base_link laser
-ros2 launch nav2_bringup navigation_launch.py params_file:=/home/sdp12/sdp8_ws/red_robot_sdp/params/nav2_params.yaml slam:=True
-ros2 launch slam_toolbox online_async_launch.py
-ros2 launch red_robot_sdp display.launch.py
