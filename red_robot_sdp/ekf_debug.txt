@@ -1,0 +1,300 @@
+tf_prefix is 
+map_frame is map
+odom_frame is odom
+base_link_frame is base_link
+base_link_output_frame is base_link
+world_frame is map
+transform_time_offset is 0
+transform_timeout is 0.2
+frequency is 30
+sensor_timeout is 0.1
+two_d_mode is true
+smooth_lagged_data is false
+history_length is 0
+use_control is false
+control_config is (false false false false false false )
+
+control_timeout is 0
+acceleration_limits are (1 1 1 1 1 1 )
+
+acceleration_gains are (1 1 1 1 1 1 )
+
+deceleration_limits are (1 1 1 1 1 1 )
+
+deceleration_gains are (1 1 1 1 1 1 )
+
+initial state is [0           0           0           0           0           0           0           0           0           0           0           0           0           0           0           ]
+
+dynamic_process_noise_covariance is false
+permit_corrected_publication is false
+print_diagnostics is true
+Subscribed to odometry/gps (odom0)
+	odom0_differential is false
+	odom0_pose_rejection_threshold is 1.7977e+308
+	odom0_twist_rejection_threshold is 1.7977e+308
+	odom0 pose update vector is (true true false false false false false false false false false false false false false )
+	odom0 twist update vector is (false false false false false false false false false false false false false false false )
+Subscribed to imu/data (imu0)
+	imu0_differential is false
+	imu0_pose_rejection_threshold is 0.8
+	imu0_twist_rejection_threshold is 0.8
+	imu0_linear_acceleration_rejection_threshold is 0.8
+	imu0_remove_gravitational_acceleration is true
+	imu0 pose update vector is (false false false true true true false false false false false false false false false )
+	imu0 twist update vector is (false false false false false false false false false true true true false false false )
+	imu0 acceleration update vector is (false false false false false false false false false false false false true true true )
+Process noise covariance is:
+[0.05        0           0           0           0           0           0           0           0           0           0           0           0           0           0           
+ 0           0.05        0           0           0           0           0           0           0           0           0           0           0           0           0           
+ 0           0           0.06        0           0           0           0           0           0           0           0           0           0           0           0           
+ 0           0           0           0.03        0           0           0           0           0           0           0           0           0           0           0           
+ 0           0           0           0           0.03        0           0           0           0           0           0           0           0           0           0           
+ 0           0           0           0           0           0.06        0           0           0           0           0           0           0           0           0           
+ 0           0           0           0           0           0           0.025       0           0           0           0           0           0           0           0           
+ 0           0           0           0           0           0           0           0.025       0           0           0           0           0           0           0           
+ 0           0           0           0           0           0           0           0           0.04        0           0           0           0           0           0           
+ 0           0           0           0           0           0           0           0           0           0.01        0           0           0           0           0           
+ 0           0           0           0           0           0           0           0           0           0           0.01        0           0           0           0           
+ 0           0           0           0           0           0           0           0           0           0           0           0.02        0           0           0           
+ 0           0           0           0           0           0           0           0           0           0           0           0           0.01        0           0           
+ 0           0           0           0           0           0           0           0           0           0           0           0           0           0.01        0           
+ 0           0           0           0           0           0           0           0           0           0           0           0           0           0           0.015       ]
+
+Initial estimate error covariance is:
+(1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.0000000000000000623e-09 )
+
+------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...------ RosFilter<T>::imuCallback (imu0) ------
+Received message that preceded the most recent pose reset. Ignoring...
