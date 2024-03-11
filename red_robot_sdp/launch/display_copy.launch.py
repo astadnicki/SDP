@@ -8,7 +8,7 @@ def generate_launch_description():
     pkg_share = launch_ros.substitutions.FindPackageShare(package='red_robot_sdp').find('red_robot_sdp')
     default_model_path = os.path.join(pkg_share, 'src/description/red_robot_description.urdf')
     default_rviz_config_path = os.path.join(pkg_share, 'rviz/urdf_config.rviz')
-    robot_localization_file_path = os.path.join(pkg_share, 'params/ekf_with_gps.yaml') 
+    robot_localization_file_path = os.path.join(pkg_share, 'config/ekf_with_gps.yaml') 
     #use_sim_time = LaunchConfiguration('use_sim_time')
 
     robot_state_publisher_node = launch_ros.actions.Node(
@@ -43,13 +43,11 @@ def generate_launch_description():
         name='navsat_transform',
         output='screen',
         parameters=[robot_localization_file_path],
-        remappings=[
-        	    ('imu/data', 'imu/data'),
-                    ('gps/fix', '/gps/fix'), 
+        remappings=[('imu', 'imu/data'),
+                    ('gps/fix', 'gps/fix'), 
                     ('gps/filtered', 'gps/filtered'),
                     ('odometry/gps', 'odometry/gps'),
-                    ('odometry/filtered', 'odometry/global')
-                    ]
+                    ('odometry/filtered', 'odometry/global')]
     )
     # Start robot localization using an Extended Kalman filter...map->odom transform
     start_robot_localization_global_node = launch_ros.actions.Node(
@@ -58,9 +56,8 @@ def generate_launch_description():
         name='ekf_filter_node_map',
         output='screen',
         parameters=[robot_localization_file_path],
-        remappings=[('odometry/filtered', 'odometry/global') #add in comma for /set_pose
-                    #('/set_pose', '/initialpose')
-                    ]
+        remappings=[('odometry/filtered', 'odometry/global'),
+                    ('/set_pose', '/initialpose')]
     )
 
     # Start robot localization using an Extended Kalman filter...odom->base_footprint transform
@@ -71,8 +68,7 @@ def generate_launch_description():
         output='screen',
         parameters=[robot_localization_file_path],
         remappings=[('odometry/filtered', 'odometry/local'),
-                    #('/set_pose', '/initialpose')
-                    ]
+                    ('/set_pose', '/initialpose')]
      )
      
 
