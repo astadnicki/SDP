@@ -176,6 +176,7 @@ void loop() {
     } else if (data.substring(0,1) == "B") {
       // drive left
       driveTurn(data.substring(3,5).toInt(), data.substring(6,8).toInt());
+      Serial.println(data.substring(6,8));
       //Serial.println(data.substring(6,8).toInt());
     } else if (data.substring(0,1) == "C") {
       // drive right
@@ -279,11 +280,11 @@ int driveForward(int speed){  // 23 inches moved for 350ms (IMU says on average 
       l = 255;  // default for going straight
       r = 243;  // default for going straight
     } else {
-      Serial.println(speed);
+      //Serial.println(speed);
       l = (speed - 50) * 5.1; // converts from percentage to number from 0-255 255/50 = 5.1
-      Serial.println(l);
+      //Serial.println(l);
       r = (speed - 50) * 4.86; // converts from percentage to number from 0-243 243/50 = 4.86
-      Serial.println(r);
+      //Serial.println(r);
     }
     // HIGH all wheels forward
     digitalWrite(LeftDirection, LOW);
@@ -384,28 +385,25 @@ int driveTurn(int left, int right) {
 
     if (left >= 50) {
       digitalWrite(LeftDirection, LOW);
-      l = left * 5.1
+      l = left * 5.1;
     } else {
-      digitalWrite(RightDirection, HIGH);
-      l = left * 5.1
+      digitalWrite(LeftDirection, HIGH);
+      l = left * 5.1;
     }
 
     if (right >= 50) {
-      digitalWrite(LeftDirection, LOW);
-      l = right * 4.86
+      digitalWrite(RightDirection, LOW);
+      r = right * 4.86;
     } else {
       digitalWrite(RightDirection, HIGH);
-      l = right * 4.86
+      r = right * 4.86;
     }
     
     // HIGH all wheels forward
-    digitalWrite(LeftDirection, LOW);
-    digitalWrite(RightDirection, LOW);
     //analogWrite(Right, 220); // was 220
     analogWrite(Right, r); // 243
     analogWrite(Left, l); // 255
 
-    if 
 }
 
 int stopMoving() {
