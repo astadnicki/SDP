@@ -24,8 +24,7 @@ def generate_launch_description():
     configured_params = RewrittenYaml(
         source_file=nav2_params, root_key="", param_rewrites="", convert_types=True
     )
-    #nmea_config_file = os.path.join(get_package_share_directory("nmea_navsat_driver"), "config","nmea_serial_driver.yaml") #for navsat driver node
-    nmea_dir = get_package_share_directory('nmea_navsat_driver')
+    nmea_config_file = os.path.join(get_package_share_directory("nmea_navsat_driver"), "config","nmea_serial_driver.yaml") #for navsat driver node
     use_sim_time = LaunchConfiguration('use_sim_time')
     slam_params_file = LaunchConfiguration('slam_params_file')
     
@@ -57,7 +56,7 @@ def generate_launch_description():
         arguments=['-d', LaunchConfiguration('rvizconfig')],
     )
     #Waypoint follower run file
-    waypoint_follower_node = launch_ros.actions.Node(
+    waypoint_follower_cmd = launch_ros.actions.Node(
         package='nav2_gps_waypoint_follower_demo',
         executable='logged_waypoint_follower',
         name='waypoint_follower'
@@ -79,10 +78,11 @@ def generate_launch_description():
         }.items(),
     )
     #nmea navsat node
-    nmea_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(nmea_dir, 'launch', 'navigation_launch.py')
-        ),
+    navsat_node = launch_ros.actions.Node(
+        package='nmea_navsat_driver',
+        executable='nmea_serial_driver',
+        output='screen',
+        parameters=[nmea_config_file]
     )
     #rplidar_node launch
     rplidar_ros_node = launch_ros.actions.Node(
@@ -128,7 +128,7 @@ def generate_launch_description():
 
 
 
-    ld = launch.LaunchDescription([
+    return launch.LaunchDescription([
         launch.actions.DeclareLaunchArgument(name='gui', default_value='True',
                                             description='Flag to enable joint_state_publisher_gui'),
         launch.actions.DeclareLaunchArgument(name='model', default_value=default_model_path,
@@ -144,9 +144,8 @@ def generate_launch_description():
         rviz_node,
         #navigation2_cmd,
         #robot_localization_cmd,
-        waypoint_follower_node,
+        #waypoint_follower_cmd,
         #navsat_node,
-        
         #start_async_slam_toolbox_node,
         
         #start_navsat_transform_node,
@@ -160,9 +159,3 @@ def generate_launch_description():
         laser_odom_node,
        
     ])
-    ld.addaction(nmea_cmd)
-    ld.addaction(robot_localization_cmd)
-    ld.addaction(navigation2_cmd)   
-    ld.addaction(robot_localization_cmd)
-
-    return ld
